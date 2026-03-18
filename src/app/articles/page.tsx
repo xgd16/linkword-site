@@ -3,9 +3,16 @@ import { getPublishedArticleList } from "@/lib/api"
 import ArticlesGrid from "./ArticlesGrid"
 import PageMotion from "@/components/PageMotion"
 
+import { getFullUrl } from "@/lib/site"
+
 export const metadata = {
-  title: "文章列表 - LinkWord",
-  description: "最新文章与资讯",
+  title: "文章列表",
+  description: "最新文章与资讯，精选内容推荐",
+  openGraph: {
+    url: getFullUrl("/articles"),
+    title: "文章列表 - LinkWord",
+    description: "最新文章与资讯，精选内容推荐",
+  },
 }
 
 interface PageProps {

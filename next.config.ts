@@ -1,10 +1,12 @@
 import type { NextConfig } from "next";
 
+const apiBase = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901";
+
 const nextConfig: NextConfig = {
-  // 可选：同域部署时用 rewrites 代理 /api -> 后端，避免 CORS
-  // async rewrites() {
-  //   return [{ source: "/api/:path*", destination: "http://localhost:9901/:path*" }];
-  // },
+  // sitemap.xml 由 Go 后端直读数据库生成
+  async rewrites() {
+    return [{ source: "/sitemap.xml", destination: `${apiBase.replace(/\/$/, "")}/sitemap.xml` }];
+  },
 };
 
 export default nextConfig;

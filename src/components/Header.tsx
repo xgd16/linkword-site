@@ -72,6 +72,13 @@ export default function Header() {
           >
             文章
           </Link>
+          <Link
+            href="/settings"
+            className="rounded-lg p-2 text-app-text-muted transition hover:text-app-text"
+            aria-label="设置"
+          >
+            <i className="ri-settings-3-line text-lg" />
+          </Link>
           <ThemeSelector />
         </div>
       </div>

@@ -9,6 +9,7 @@ const MAIN_NAV = [
   { name: "网站首页", path: "/", icon: "ri-home-line" },
   { name: "网站导航", path: "/nav", icon: "ri-links-line" },
   { name: "文章列表", path: "/articles", icon: "ri-article-line" },
+  { name: "设置", path: "/settings", icon: "ri-settings-3-line" },
 ]
 
 interface SidebarProps {

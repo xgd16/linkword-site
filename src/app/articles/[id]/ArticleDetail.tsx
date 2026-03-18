@@ -4,6 +4,14 @@ import Link from "next/link"
 import { motion } from "motion/react"
 import type { ArticleDetail } from "@/lib/api"
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
+
+function getCoverUrl(cover: string): string {
+  if (!cover) return ""
+  if (cover.startsWith("http")) return cover
+  return `${API_BASE.replace(/\/$/, "")}${cover.startsWith("/") ? "" : "/"}${cover}`
+}
+
 interface ArticleDetailProps {
   article: ArticleDetail
 }
@@ -64,7 +72,7 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
             className="mt-4 overflow-hidden rounded-xl"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={article.cover} alt="" className="w-full object-cover" />
+            <img src={getCoverUrl(article.cover)} alt={article.title} className="w-full object-cover" />
           </motion.div>
         )}
 

@@ -1,9 +1,16 @@
 import { getNavTree, getPublishedArticleList } from "@/lib/api"
 import type { NavTreeCategory, ArticleItem } from "@/lib/api"
+import { getFullUrl } from "@/lib/site"
 import FeaturedBanner from "@/components/FeaturedBanner"
 import LatestReleases from "@/components/LatestReleases"
 import TodayNews from "@/components/TodayNews"
 import PageMotion from "@/components/PageMotion"
+
+export const metadata = {
+  openGraph: {
+    url: getFullUrl("/"),
+  },
+}
 
 export default async function HomePage() {
   let navTree: NavTreeCategory[] = []

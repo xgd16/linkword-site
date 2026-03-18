@@ -4,9 +4,16 @@ import NavContent from "./NavContent"
 import Link from "next/link"
 import PageMotion from "@/components/PageMotion"
 
+import { getFullUrl } from "@/lib/site"
+
 export const metadata = {
-  title: "网站导航 - LinkWord",
-  description: "精选网站与工具导航",
+  title: "网站导航",
+  description: "精选网站与工具导航，发现优质工具与资源",
+  openGraph: {
+    url: getFullUrl("/nav"),
+    title: "网站导航 - LinkWord",
+    description: "精选网站与工具导航，发现优质工具与资源",
+  },
 }
 
 interface PageProps {

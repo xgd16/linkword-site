@@ -98,6 +98,12 @@ export async function reportNavLinkClick(linkId: number): Promise<void> {
   }
 }
 
+/** 获取链接详情（公开） */
+export async function getNavLinkDetail(id: number): Promise<NavLinkWithCategory | null> {
+  const res = await request<{ item: NavLinkWithCategory | null }>(`/nav/link/detail?id=${id}`)
+  return res.data?.item ?? null
+}
+
 export async function getNavLinksPaginated(params?: {
   pageNum?: number
   pageSize?: number
