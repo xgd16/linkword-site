@@ -1,0 +1,146 @@
+"use client"
+
+import { useState } from "react"
+import { motion } from "motion/react"
+import type { NavTreeLink } from "@/lib/api"
+import { reportNavLinkClick } from "@/lib/api"
+import { spring, staggerItem } from "@/lib/motion"
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
+
+function getDomain(url: string): string {
+  try {
+    const u = new URL(url)
+    return u.hostname.replace(/^www\./, "")
+  } catch {
+    return ""
+  }
+}
+
+/** 优先后端静态资源，无则用官方 favicon */
+function getIconSrc(icon: string, domain: string): { primary: string; fallback: string } {
+  const fallback = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=64` : ""
+  if (icon?.startsWith("/upload/")) {
+    return { primary: `${API_BASE.replace(/\/$/, "")}${icon}`, fallback }
+  }
+  if (icon?.startsWith("http")) {
+    return { primary: icon, fallback }
+  }
+  return { primary: fallback, fallback }
+}
+
+interface NavLinkCardProps {
+  link: NavTreeLink
+  categoryName: string
+}
+
+export default function NavLinkCard({ link, categoryName }: NavLinkCardProps) {
+  const domain = getDomain(link.url)
+  const { primary: iconSrc, fallback: faviconUrl } = getIconSrc(link.icon ?? "", domain)
+  const [iconError, setIconError] = useState<Record<string, boolean>>({})
+
+  const handleClick = () => {
+    reportNavLinkClick(link.id)
+  }
+
+  return (
+    <motion.a
+      href={link.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={handleClick}
+      variants={staggerItem}
+      whileHover={{ y: -4, transition: spring }}
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-app-border bg-app-card transition-all duration-300 hover:border-app-border hover:shadow-md"
+    >
+      {/* 顶部预览区 - 网页截图或占位 */}
+      <div className="relative flex aspect-[2.2/1] items-center justify-center overflow-hidden bg-gradient-to-br from-app-gradient-from to-app-gradient-to">
+        <div className="absolute inset-0 bg-white/5" />
+        {link.cover ? (
+          <img
+            src={link.cover.startsWith("http") ? link.cover : `${API_BASE.replace(/\/$/, "")}${link.cover}`}
+            alt=""
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="relative flex h-full w-full items-center justify-center p-4">
+            {link.icon?.startsWith("ri-") ? (
+              <i
+                className={`${link.icon} text-5xl text-app-accent/90 drop-shadow-sm`}
+                style={{ fontSize: "3rem" }}
+              />
+            ) : (iconSrc || faviconUrl) ? (
+              <img
+                src={iconError[link.id] ? faviconUrl : iconSrc || faviconUrl}
+                alt=""
+                className="h-16 w-16 rounded-xl object-contain drop-shadow-md"
+                onError={() => setIconError((prev) => ({ ...prev, [link.id]: true }))}
+              />
+            ) : (
+              <span className="flex h-16 w-16 items-center justify-center rounded-xl bg-app-accent/20 text-2xl font-bold text-app-accent">
+                {link.title.charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 品牌信息区 */}
+      <div className="flex flex-1 flex-col p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-app-card-hover">
+            {link.icon?.startsWith("ri-") ? (
+              <i className={`${link.icon} text-xl text-app-accent`} />
+            ) : (iconSrc || faviconUrl) ? (
+              <img
+                src={iconError[link.id] ? faviconUrl : iconSrc || faviconUrl}
+                alt=""
+                className="h-8 w-8 object-contain"
+                onError={() => setIconError((prev) => ({ ...prev, [link.id]: true }))}
+              />
+            ) : (
+              <span className="text-lg font-semibold text-app-accent">
+                {link.title.charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-semibold text-app-text transition-opacity group-hover:opacity-90">
+              {link.title}
+            </h3>
+            <p className="mt-0.5 text-xs text-app-text-muted">
+              {categoryName}
+            </p>
+          </div>
+        </div>
+
+        {/* 核心功能标语 - 箭头位置，简短即可 */}
+        {(link.slogan || link.description || categoryName) && (
+          <div className="mt-3 flex items-center gap-2 rounded-lg bg-app-card-hover px-3 py-2">
+            <i className="ri-flashlight-fill text-base text-[#f59e0b]" />
+            <span className="truncate text-sm text-app-text">
+              {link.slogan || link.description?.slice(0, 24) || categoryName}
+              {!link.slogan && (link.description?.length ?? 0) > 24 ? "..." : ""}
+            </span>
+          </div>
+        )}
+
+        {/* 详细描述 */}
+        <p className="mt-2 line-clamp-2 text-sm text-app-text-muted">
+          {link.description || link.url}
+        </p>
+
+        {/* 底部统计/操作区 */}
+        <div className="mt-3 flex items-center justify-between border-t border-app-border/60 pt-3">
+          <span className="flex items-center gap-1.5 text-xs text-app-text-muted">
+            <i className="ri-external-link-line text-sm" />
+            直达链接
+          </span>
+          <span className="text-xs text-app-accent transition-colors group-hover:text-app-accent-secondary">
+            访问 →
+          </span>
+        </div>
+      </div>
+    </motion.a>
+  )
+}

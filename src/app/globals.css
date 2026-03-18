@@ -1,0 +1,244 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* 主题变量 - 浅色：清新绿意 */
+:root,
+[data-theme="theme-light"] {
+  --app-bg: #f8faf8;
+  --app-card: #ffffff;
+  --app-card-hover: #f1f5f1;
+  --app-text: #18181b;
+  --app-text-muted: #64748b;
+  --app-border: #e2e8e2;
+  --app-accent: #059669;
+  --app-accent-muted: #d1fae5;
+  --app-accent-secondary: #0891b2;
+  --app-accent-secondary-muted: #cffafe;
+  --app-gradient-from: #ecfdf5;
+  --app-gradient-to: #f0fdfa;
+  --app-highlight: #fef3c7;
+  --app-tag: #e0f2fe;
+  --app-tag-text: #0369a1;
+  --app-sidebar-active: #059669;
+}
+
+/* 深色：翡翠夜 - 灰蓝中性暗色，青绿点缀 */
+[data-theme="theme-dark"] {
+  --app-bg: #0f1419;
+  --app-card: #1a1f26;
+  --app-card-hover: #242b33;
+  --app-text: #e8ecf0;
+  --app-text-muted: #8b95a1;
+  --app-border: #2a333d;
+  --app-accent: #10b981;
+  --app-accent-muted: #064e3b;
+  --app-accent-secondary: #06b6d4;
+  --app-accent-secondary-muted: #0e7490;
+  --app-gradient-from: #1e293b;
+  --app-gradient-to: #0f172a;
+  --app-highlight: #1e3a5f;
+  --app-tag: #1e3a4e;
+  --app-tag-text: #67e8f9;
+  --app-sidebar-active: #10b981;
+}
+
+/* 暖色浅色 - 护眼：琥珀暖光 */
+[data-theme="theme-sepia"] {
+  --app-bg: #faf6f0;
+  --app-card: #fdf8f2;
+  --app-card-hover: #f5ebe0;
+  --app-text: #3d3829;
+  --app-text-muted: #78716c;
+  --app-border: #e7e0d8;
+  --app-accent: #c2410c;
+  --app-accent-muted: #ffedd5;
+  --app-accent-secondary: #b45309;
+  --app-accent-secondary-muted: #fef3c7;
+  --app-gradient-from: #fff7ed;
+  --app-gradient-to: #fffbeb;
+  --app-highlight: #fef9c3;
+  --app-tag: #fef3c7;
+  --app-tag-text: #92400e;
+  --app-sidebar-active: #ea580c;
+}
+
+/* 深蓝海洋：碧波 */
+[data-theme="theme-ocean"] {
+  --app-bg: #0c1222;
+  --app-card: #151d2e;
+  --app-card-hover: #1e293b;
+  --app-text: #f0f9ff;
+  --app-text-muted: #94a3b8;
+  --app-border: #1e3a4e;
+  --app-accent: #38bdf8;
+  --app-accent-muted: #0c4a6e;
+  --app-accent-secondary: #22d3ee;
+  --app-accent-secondary-muted: #164e63;
+  --app-gradient-from: #0c4a6e;
+  --app-gradient-to: #155e75;
+  --app-highlight: #1e3a5f;
+  --app-tag: #0e7490;
+  --app-tag-text: #67e8f9;
+  --app-sidebar-active: #38bdf8;
+}
+
+/* 深绿森林：林间 - 浓郁叶绿 */
+[data-theme="theme-forest"] {
+  --app-bg: #0a120e;
+  --app-card: #0f1a12;
+  --app-card-hover: #162319;
+  --app-text: #d1fae5;
+  --app-text-muted: #6b9080;
+  --app-border: #1e3d2a;
+  --app-accent: #22c55e;
+  --app-accent-muted: #052e16;
+  --app-accent-secondary: #4ade80;
+  --app-accent-secondary-muted: #166534;
+  --app-gradient-from: #052e16;
+  --app-gradient-to: #064e3b;
+  --app-highlight: #14532d;
+  --app-tag: #166534;
+  --app-tag-text: #86efac;
+  --app-sidebar-active: #4ade80;
+}
+
+@theme inline {
+  --color-app-bg: var(--app-bg);
+  --color-app-card: var(--app-card);
+  --color-app-card-hover: var(--app-card-hover);
+  --color-app-text: var(--app-text);
+  --color-app-text-muted: var(--app-text-muted);
+  --color-app-border: var(--app-border);
+  --color-app-accent: var(--app-accent);
+  --color-app-accent-muted: var(--app-accent-muted);
+  --color-app-accent-secondary: var(--app-accent-secondary);
+  --color-app-accent-secondary-muted: var(--app-accent-secondary-muted);
+  --color-app-gradient-from: var(--app-gradient-from);
+  --color-app-gradient-to: var(--app-gradient-to);
+  --color-app-highlight: var(--app-highlight);
+  --color-app-tag: var(--app-tag);
+  --color-app-tag-text: var(--app-tag-text);
+  --color-app-sidebar-active: var(--app-sidebar-active);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 背景慢动态光晕 */
+@keyframes bg-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(3%, -2%) scale(1.02); }
+  66% { transform: translate(-2%, 3%) scale(0.98); }
+}
+@keyframes bg-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40% { transform: translate(-4%, 2%) scale(1.01); }
+  80% { transform: translate(2%, -3%) scale(0.99); }
+}
+@keyframes bg-float-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(2%, 4%) scale(1.03); }
+}
+@keyframes bg-float-4 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-3%, -1%) scale(0.97); }
+  75% { transform: translate(1%, 2%) scale(1.02); }
+}
+@keyframes bg-float-5 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  60% { transform: translate(4%, -4%) scale(1.01); }
+}
+
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  will-change: transform;
+}
+[data-theme="theme-dark"] .bg-orb,
+[data-theme="theme-ocean"] .bg-orb,
+[data-theme="theme-forest"] .bg-orb {
+  opacity: 0.12;
+}
+
+.bg-orb-1 {
+  width: 400px;
+  height: 400px;
+  background: var(--app-accent);
+  top: -10%;
+  left: -5%;
+  animation: bg-float-1 25s ease-in-out infinite;
+}
+.bg-orb-2 {
+  width: 320px;
+  height: 320px;
+  background: var(--app-accent-secondary);
+  top: 30%;
+  right: -8%;
+  animation: bg-float-2 30s ease-in-out infinite;
+}
+.bg-orb-3 {
+  width: 280px;
+  height: 280px;
+  background: var(--app-gradient-from);
+  bottom: -5%;
+  left: 20%;
+  animation: bg-float-3 28s ease-in-out infinite;
+}
+.bg-orb-4 {
+  width: 360px;
+  height: 360px;
+  background: var(--app-gradient-to);
+  top: 50%;
+  left: 50%;
+  animation: bg-float-4 35s ease-in-out infinite;
+}
+.bg-orb-5 {
+  width: 240px;
+  height: 240px;
+  background: var(--app-accent-muted);
+  bottom: 20%;
+  right: 15%;
+  animation: bg-float-5 32s ease-in-out infinite;
+}
+
+/* 文章正文样式 */
+.article-body h1,
+.article-body h2,
+.article-body h3 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+.article-body p {
+  margin-bottom: 1em;
+  line-height: 1.75;
+}
+.article-body ul,
+.article-body ol {
+  margin: 0.5em 0 1em 1.5em;
+}
+.article-body code {
+  padding: 0.2em 0.4em;
+  font-size: 0.9em;
+  background: var(--app-card-hover);
+  border-radius: 0.25rem;
+}
+.article-body pre {
+  overflow-x: auto;
+  padding: 1em;
+  margin: 1em 0;
+  background: var(--app-card-hover);
+  border-radius: 0.5rem;
+}
+.article-body pre code {
+  padding: 0;
+  background: none;
+}
