@@ -3,6 +3,7 @@ const DEFAULT_API = "http://localhost:9901"
 /** 客户端请求使用公开 API 地址；服务端渲染（SSR）使用 API_BASE_SERVER（若配置） */
 function getApiBase(): string {
   if (typeof window === "undefined" && process.env.API_BASE_SERVER) {
+    console.log("[SSR] API_BASE_SERVER:", process.env.API_BASE_SERVER, "→ using:", getApiBase())
     return process.env.API_BASE_SERVER.replace(/\/$/, "")
   }
   return (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
