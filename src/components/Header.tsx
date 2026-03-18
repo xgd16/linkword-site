@@ -82,14 +82,14 @@ export default function Header() {
           <ThemeSelector />
         </div>
       </div>
-      <div className="ml-4 flex items-center gap-3">
+      {/* <div className="ml-4 flex items-center gap-3">
         <div className="hidden text-right sm:block">
           <p className="text-sm font-medium text-app-text">
             LinkWord
           </p>
           <p className="text-xs text-app-text-muted">网站导航 + 文章系统</p>
         </div>
-      </div>
+      </div> */}
     </motion.header>
   )
 }
