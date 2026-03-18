@@ -1,4 +1,12 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
+const DEFAULT_API = "http://localhost:9901"
+
+/** 客户端请求使用公开 API 地址；服务端渲染（SSR）使用 API_BASE_SERVER（若配置） */
+function getApiBase(): string {
+  if (typeof window === "undefined" && process.env.API_BASE_SERVER) {
+    return process.env.API_BASE_SERVER.replace(/\/$/, "")
+  }
+  return (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
+}
 
 export interface NavTreeLink {
   id: number
@@ -35,7 +43,7 @@ interface ApiResponse<T> {
 }
 
 async function request<T>(url: string, init?: RequestInit): Promise<ApiResponse<T>> {
-  const base = API_BASE.replace(/\/$/, "")
+  const base = getApiBase()
   const path = url.startsWith("/") ? url : `/${url}`
   const res = await fetch(`${base}${path}`, {
     ...init,
@@ -87,7 +95,7 @@ export async function getNavCategoriesHot(limit = 5): Promise<NavCategoryBrief[]
 /** 上报链接点击 */
 export async function reportNavLinkClick(linkId: number): Promise<void> {
   try {
-    await fetch(`${API_BASE.replace(/\/$/, '')}/nav/link/click`, {
+    await fetch(`${(process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, '')}/nav/link/click`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ linkId }),

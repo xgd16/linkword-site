@@ -24,9 +24,11 @@ npm run dev
 
 | 变量 | 说明 | 默认 |
 |-----|------|------|
-| `NEXT_PUBLIC_API_BASE` | Go API 基地址 | `http://localhost:9901` |
+| `NEXT_PUBLIC_API_BASE` | 客户端请求的 Go API 基地址 | `http://localhost:9901` |
+| `API_BASE_SERVER` | SSR 请求单独使用的 API 地址（可选，未配置则用 `NEXT_PUBLIC_API_BASE`） | - |
+| `NEXT_PUBLIC_SITE_URL` | 站点 URL，用于 SEO（sitemap、OG 等） | `https://linkwordx.xyz` |
 
-生产环境请根据实际部署填写（如 `https://api.example.com`）。
+生产环境部署时，若 Next 与 API 同机或内网互通，可配置 `API_BASE_SERVER` 为内网地址（如 `http://localhost:9901`、`http://api:9901`），减轻公网回环请求。
 
 ## 目录结构
 
