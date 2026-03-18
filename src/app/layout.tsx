@@ -6,7 +6,7 @@ import Sidebar from "@/components/Sidebar"
 import Header from "@/components/Header"
 import BackgroundEffects from "@/components/BackgroundEffects"
 import { ThemeProvider } from "@/components/ThemeProvider"
-import { getNavCategoriesHot } from "@/lib/api"
+import { getNavCategoriesHot, type NavTreeCategory } from "@/lib/api"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,10 +28,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  let navTree: { id: number; name: string; icon: string; links: unknown[] }[] = []
+  let navTree: NavTreeCategory[] = []
   try {
     const hotCategories = await getNavCategoriesHot(5)
-    navTree = hotCategories.map((c) => ({ ...c, links: [] }))
+    navTree = hotCategories.map((c): NavTreeCategory => ({ ...c, links: [] }))
   } catch {
     // 忽略 API 错误，使用空导航
   }
