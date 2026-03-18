@@ -53,6 +53,7 @@ export default function LatestReleases({
           <motion.div key={article.id} variants={staggerItem}>
             <Link
               href={`/articles/${article.id}`}
+              prefetch={false}
               className="group relative block overflow-hidden rounded-xl border border-app-border bg-app-card transition-all duration-300 hover:border-app-border hover:shadow-md hover:bg-app-card-hover"
             >
               <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-app-gradient-from to-app-gradient-to">

@@ -153,6 +153,7 @@ export default function NavContent({
         <motion.div variants={staggerItem} className="flex flex-wrap gap-2">
           <Link
             href={buildNavHref({ cat: "", keyword }, { categoryId, keyword })}
+            prefetch={false}
             className={`rounded-lg border px-3 py-2 text-sm transition ${
               !categoryId || categoryId === "all"
                 ? "border-app-accent bg-app-accent/10 text-app-accent"
@@ -165,6 +166,7 @@ export default function NavContent({
             <Link
               key={cat.id}
               href={buildNavHref({ cat: String(cat.id), keyword }, { categoryId, keyword })}
+              prefetch={false}
               className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
                 categoryId === String(cat.id)
                   ? "border-app-accent bg-app-accent/10 text-app-accent"

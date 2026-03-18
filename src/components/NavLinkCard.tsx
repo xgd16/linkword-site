@@ -199,7 +199,7 @@ export default function NavLinkCard({ link, categoryName }: NavLinkCardProps) {
   }
 
   return (
-    <Link href={`/nav/${link.id}`} target="_blank" rel="noopener noreferrer">
+    <Link href={`/nav/${link.id}`} prefetch={false} target="_blank" rel="noopener noreferrer">
       {cardContent}
     </Link>
   )

@@ -18,6 +18,7 @@ export default function ArticleCard({ item }: ArticleCardProps) {
     >
         <Link
           href={`/articles/${item.id}`}
+          prefetch={false}
           className="group block overflow-hidden rounded-xl border border-app-border bg-app-card transition-all duration-300 hover:border-app-border hover:shadow-md hover:bg-app-card-hover"
         >
           {item.cover && (

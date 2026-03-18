@@ -78,6 +78,7 @@ export default function Sidebar({ navTree = [] }: SidebarProps) {
                 >
                   <Link
                     href={`/nav?cat=${cat.id}`}
+                    prefetch={false}
                     className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-app-text-muted transition-colors hover:bg-app-card-hover hover:text-app-text"
                   >
                     <i

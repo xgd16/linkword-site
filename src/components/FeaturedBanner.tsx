@@ -50,6 +50,7 @@ export default function FeaturedBanner({ articles }: FeaturedBannerProps) {
             <Link
               key={article.id}
               href={`/articles/${article.id}`}
+              prefetch={false}
               className="group flex gap-4 overflow-hidden rounded-xl border border-app-border bg-app-card p-4 transition-all duration-200 hover:border-app-border hover:bg-app-card-hover"
             >
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-app-gradient-from">

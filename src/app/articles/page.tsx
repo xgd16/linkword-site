@@ -61,6 +61,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
           {page > 1 && (
             <Link
               href={`/articles?page=${page - 1}`}
+              prefetch={false}
               className="rounded-lg border border-app-border px-4 py-2 text-sm text-app-text-muted transition hover:bg-app-card-hover hover:text-app-text"
             >
               上一页
@@ -72,6 +73,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
           {page < totalPages && (
             <Link
               href={`/articles?page=${page + 1}`}
+              prefetch={false}
               className="rounded-lg border border-app-border px-4 py-2 text-sm text-app-text-muted transition hover:bg-app-card-hover hover:text-app-text"
             >
               下一页
