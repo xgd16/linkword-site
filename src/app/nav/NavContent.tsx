@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useCallback, useEffect, useRef, useState, useTransition } from "react"
 import { motion } from "motion/react"
 import type { NavCategoryBrief, NavLinkWithCategory } from "@/lib/api"
 import { getNavLinksPaginated } from "@/lib/api"
@@ -42,6 +43,8 @@ export default function NavContent({
   const [hasMore, setHasMore] = useState(initialLinks.length < total)
   const [showBackTop, setShowBackTop] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
 
   useEffect(() => {
     const onScroll = () => setShowBackTop(window.scrollY > 300)
@@ -53,6 +56,15 @@ export default function NavContent({
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
+
+  const handleCategoryClick = useCallback(
+    (href: string, targetCat?: string) => (e: React.MouseEvent) => {
+      if (targetCat !== undefined && targetCat === categoryId) return
+      e.preventDefault()
+      startTransition(() => router.push(href))
+    },
+    [router, categoryId]
+  )
 
   // 当筛选条件变化时，服务端会传入新的 initialLinks，需要重置
   useEffect(() => {
@@ -124,7 +136,7 @@ export default function NavContent({
           className="pointer-events-auto flex items-center gap-3 rounded-2xl border border-app-border/80 bg-app-card/80 px-3 py-2.5 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl"
         >
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-app-card-hover text-app-accent">
-            <i className={`${loading ? "ri-loader-4-line animate-spin" : "ri-stack-line"} text-base`} />
+            <i className={`${loading || isPending ? "ri-loader-4-line animate-spin" : "ri-stack-line"} text-base`} />
           </div>
           <div className="leading-tight">
             <div className="text-[10px] uppercase tracking-[0.18em] text-app-text-muted">
@@ -154,6 +166,7 @@ export default function NavContent({
           <Link
             href={buildNavHref({ cat: "", keyword }, { categoryId, keyword })}
             prefetch={false}
+            onClick={handleCategoryClick(buildNavHref({ cat: "", keyword }, { categoryId, keyword }), "")}
             className={`rounded-lg border px-3 py-2 text-sm transition ${
               !categoryId || categoryId === "all"
                 ? "border-app-accent bg-app-accent/10 text-app-accent"
@@ -167,6 +180,10 @@ export default function NavContent({
               key={cat.id}
               href={buildNavHref({ cat: String(cat.id), keyword }, { categoryId, keyword })}
               prefetch={false}
+              onClick={handleCategoryClick(
+                buildNavHref({ cat: String(cat.id), keyword }, { categoryId, keyword }),
+                String(cat.id)
+              )}
               className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
                 categoryId === String(cat.id)
                   ? "border-app-accent bg-app-accent/10 text-app-accent"
@@ -184,34 +201,42 @@ export default function NavContent({
         </motion.div>
       )}
 
-      {/* 链接网格 */}
-      <motion.div
-        variants={staggerContainer(0.03, 0.03)}
-        initial="hidden"
-        animate="show"
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-      >
-        {links.map((link) => (
-          <NavLinkCard
-            key={link.id}
-            link={{
-              id: link.id,
-              title: link.title,
-              url: link.url,
-              icon: link.icon,
-              cover: link.cover,
-              slogan: link.slogan ?? "",
-              description: link.description ?? "",
-            }}
-            categoryName={link.categoryName}
-          />
-        ))}
-      </motion.div>
+      {/* 链接网格 - 切换分类时显示骨架 */}
+      {isPending ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: pageSize }).map((_, i) => (
+            <NavLinkCardSkeleton key={`transition-skeleton-${i}`} />
+          ))}
+        </div>
+      ) : (
+        <motion.div
+          variants={staggerContainer(0.03, 0.03)}
+          initial="hidden"
+          animate="show"
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
+          {links.map((link) => (
+            <NavLinkCard
+              key={link.id}
+              link={{
+                id: link.id,
+                title: link.title,
+                url: link.url,
+                icon: link.icon,
+                cover: link.cover,
+                slogan: link.slogan ?? "",
+                description: link.description ?? "",
+              }}
+              categoryName={link.categoryName}
+            />
+          ))}
+        </motion.div>
+      )}
 
       {/* 底部：加载骨架 + 触发点 */}
       <motion.div variants={staggerItem} className="flex flex-col items-center gap-4 py-6">
         {/* 加载骨架 */}
-        {loading && (
+        {(loading || isPending) && (
           <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: Math.min(4, pageSize) }).map((_, i) => (
               <NavLinkCardSkeleton key={`skeleton-${i}`} />
@@ -220,7 +245,7 @@ export default function NavContent({
         )}
 
         {/* 滚动触发点 */}
-        {hasMore && !loading && <div ref={sentinelRef} className="h-1 w-full" />}
+        {hasMore && !loading && !isPending && <div ref={sentinelRef} className="h-1 w-full" />}
       </motion.div>
     </motion.div>
   )
