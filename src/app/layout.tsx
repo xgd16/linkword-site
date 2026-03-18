@@ -3,11 +3,12 @@ import { Suspense } from "react"
 import "remixicon/fonts/remixicon.css"
 import "./globals.css"
 import Sidebar from "@/components/Sidebar"
+import SidebarHotChannels from "@/components/SidebarHotChannels"
+import SidebarHotChannelsSkeleton from "@/components/SidebarHotChannelsSkeleton"
 import Header from "@/components/Header"
 import BackgroundEffects from "@/components/BackgroundEffects"
 import { ThemeProvider } from "@/components/ThemeProvider"
 import { SettingsProvider } from "@/components/SettingsProvider"
-import { getNavCategoriesHot, type NavTreeCategory } from "@/lib/api"
 import { SITE_NAME, SITE_URL, getFullUrl } from "@/lib/site"
 
 const defaultTitle = `${SITE_NAME} - 网站导航与文章`
@@ -38,19 +39,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  let navTree: NavTreeCategory[] = []
-  try {
-    const hotCategories = await getNavCategoriesHot(5)
-    navTree = hotCategories.map((c): NavTreeCategory => ({ ...c, links: [] }))
-  } catch {
-    // 忽略 API 错误，使用空导航
-  }
-
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
@@ -65,7 +58,11 @@ export default async function RootLayout({
         <ThemeProvider>
           <SettingsProvider>
           <BackgroundEffects />
-          <Sidebar navTree={navTree} />
+          <Sidebar>
+            <Suspense fallback={<SidebarHotChannelsSkeleton />}>
+              <SidebarHotChannels />
+            </Suspense>
+          </Sidebar>
           <Suspense fallback={<header className="fixed top-0 right-0 left-0 z-30 h-14 border-b border-app-border/80 bg-app-card/60 lg:left-[220px]" />}>
             <Header />
           </Suspense>

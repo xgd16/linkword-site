@@ -32,11 +32,14 @@ const RANK_COLORS = [
 
 export default function ClickRanking() {
   const [list, setList] = useState<NavLinkClickRankItem[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    setLoading(true)
     getNavLinkClickRank(10)
       .then(setList)
       .catch(() => setList([]))
+      .finally(() => setLoading(false))
   }, [])
 
   const handleClick = (item: NavLinkClickRankItem) => {
@@ -45,6 +48,26 @@ export default function ClickRanking() {
 
   const cardClass =
     "flex h-full flex-col overflow-hidden rounded-2xl border border-app-border bg-app-card p-5"
+
+  if (loading) {
+    return (
+      <div className={cardClass}>
+        <div className="flex shrink-0 items-center gap-2">
+          <div className="h-5 w-5 animate-pulse rounded bg-app-border/40" />
+          <div className="h-5 w-36 animate-pulse rounded bg-app-border/40" />
+        </div>
+        <div className="mt-4 flex flex-1 flex-col gap-2 animate-pulse">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <div className="h-6 w-6 shrink-0 rounded bg-app-border/30" />
+              <div className="h-4 flex-1 rounded bg-app-border/30" />
+              <div className="h-4 w-12 shrink-0 rounded bg-app-border/30" />
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   if (list.length === 0) {
     return (

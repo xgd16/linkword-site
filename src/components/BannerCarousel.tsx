@@ -44,11 +44,22 @@ export default function BannerCarousel() {
   }, [index, items.length, goTo])
 
   const placeholderOrLoading = (
-    <div className="flex h-full items-center justify-center overflow-hidden rounded-2xl border border-app-border bg-gradient-to-br from-app-gradient-from to-app-gradient-to">
+    <div className="flex h-full flex-col justify-end overflow-hidden rounded-2xl border border-app-border bg-gradient-to-br from-app-gradient-from/80 to-app-gradient-to/80 animate-pulse">
       {loading ? (
-        <i className="ri-loader-4-line animate-spin text-3xl text-app-accent" />
+        <>
+          <div className="flex flex-1 items-center justify-center">
+            <div className="h-24 w-40 rounded-xl bg-app-border/30" />
+          </div>
+          <div className="flex justify-center gap-2 pb-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-2 w-2 rounded-full bg-app-border/50" />
+            ))}
+          </div>
+        </>
       ) : (
-        <span className="text-app-text-muted">暂无轮播图</span>
+        <div className="flex h-full items-center justify-center">
+          <span className="text-app-text-muted">暂无轮播图</span>
+        </div>
       )}
     </div>
   )

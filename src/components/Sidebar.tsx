@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion } from "motion/react"
-import type { NavTreeCategory } from "@/lib/api"
 
 const MAIN_NAV = [
   { name: "网站首页", path: "/", icon: "ri-home-line" },
@@ -13,10 +12,10 @@ const MAIN_NAV = [
 ]
 
 interface SidebarProps {
-  navTree?: NavTreeCategory[]
+  children?: React.ReactNode
 }
 
-export default function Sidebar({ navTree = [] }: SidebarProps) {
+export default function Sidebar({ children }: SidebarProps) {
   const pathname = usePathname()
 
   const isActive = (path: string) => {
@@ -62,37 +61,7 @@ export default function Sidebar({ navTree = [] }: SidebarProps) {
             </motion.div>
           ))}
         </div>
-        {navTree.length > 0 && (
-          <>
-            <div className="my-4 border-t border-app-border" />
-            <div className="space-y-1 px-2">
-              <p className="px-3 py-1 text-xs font-medium uppercase tracking-wider text-app-text-muted">
-                热门频道
-              </p>
-              {navTree.slice(0, 5).map((cat, i) => (
-                <motion.div
-                  key={cat.id}
-                  initial={{ x: -10, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ duration: 0.2, delay: 0.3 + i * 0.04 }}
-                >
-                  <Link
-                    href={`/nav?cat=${cat.id}`}
-                    prefetch={false}
-                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-app-text-muted transition-colors hover:bg-app-card-hover hover:text-app-text"
-                  >
-                    <i
-                      className={`text-lg ${
-                        cat.icon?.startsWith("ri-") ? cat.icon : "ri-folder-line"
-                      }`}
-                    />
-                    {cat.name}
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </>
-        )}
+        {children}
       </nav>
     </motion.aside>
   )
