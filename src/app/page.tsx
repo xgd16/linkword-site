@@ -1,9 +1,9 @@
-import { getNavTree, getPublishedArticleList } from "@/lib/api"
-import type { NavTreeCategory, ArticleItem } from "@/lib/api"
+import { getPublishedArticleList } from "@/lib/api"
+import type { ArticleItem } from "@/lib/api"
 import { getFullUrl } from "@/lib/site"
+import HeroSection from "@/components/HeroSection"
 import FeaturedBanner from "@/components/FeaturedBanner"
 import LatestReleases from "@/components/LatestReleases"
-import TodayNews from "@/components/TodayNews"
 import PageMotion from "@/components/PageMotion"
 
 export const metadata = {
@@ -13,13 +13,9 @@ export const metadata = {
 }
 
 export default async function HomePage() {
-  let navTree: NavTreeCategory[] = []
   let articleRes: { list: ArticleItem[]; total: number } = { list: [], total: 0 }
   try {
-    ;[navTree, articleRes] = await Promise.all([
-      getNavTree(),
-      getPublishedArticleList({ pageNum: 1, pageSize: 24 }),
-    ])
+    articleRes = await getPublishedArticleList({ pageNum: 1, pageSize: 24 })
   } catch {
     // 忽略 API 错误
   }
@@ -27,14 +23,16 @@ export default async function HomePage() {
   const articles = articleRes.list
 
   return (
-    <PageMotion className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      {/* 特色区 */}
-      <section className="mb-8">
-        <FeaturedBanner navTree={navTree} articles={articles} />
+    <PageMotion className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Hero 区域 */}
+      <section className="mb-10">
+        <HeroSection />
       </section>
 
-      {/* 今日要闻 */}
-      {articles.length > 0 && <TodayNews article={articles[0]} />}
+      {/* 特色内容区：轮播图 + 点击排行榜 */}
+      <section className="mb-12">
+        <FeaturedBanner articles={articles} />
+      </section>
 
       {/* 最新发布 */}
       <section>

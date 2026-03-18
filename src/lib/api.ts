@@ -151,6 +151,36 @@ export interface ArticleDetail {
   updateTime?: string
 }
 
+/** 轮播图列表（公开） */
+export async function getBannerList(): Promise<BannerItem[]> {
+  const res = await request<{ list: BannerItem[] }>('/banner/list/public')
+  return res.data?.list ?? []
+}
+
+export interface BannerItem {
+  id: number
+  title: string
+  image: string
+  url: string
+  sort: number
+}
+
+/** 导航点击排行榜 */
+export async function getNavLinkClickRank(limit = 10): Promise<NavLinkClickRankItem[]> {
+  const res = await request<{ list: NavLinkClickRankItem[] }>(`/nav/links/click-rank?limit=${limit}`)
+  return res.data?.list ?? []
+}
+
+export interface NavLinkClickRankItem {
+  id: number
+  categoryId: number
+  categoryName: string
+  title: string
+  url: string
+  icon: string
+  clickCount: number
+}
+
 export async function getPublishedArticleDetail(params: {
   id?: number
   slug?: string

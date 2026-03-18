@@ -5,6 +5,14 @@ import { motion } from "motion/react"
 import type { ArticleItem } from "@/lib/api"
 import { spring, staggerContainer, staggerItem } from "@/lib/motion"
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
+
+function resolveCover(cover: string | undefined): string | null {
+  if (!cover?.trim()) return null
+  if (cover.startsWith("http")) return cover
+  return `${API_BASE.replace(/\/$/, "")}${cover.startsWith("/") ? "" : "/"}${cover}`
+}
+
 interface LatestReleasesProps {
   articles: ArticleItem[]
   total: number
@@ -22,45 +30,62 @@ export default function LatestReleases({
         transition={spring}
         className="mb-6 flex items-center justify-between"
       >
-        <h2 className="text-lg font-semibold text-app-text">最新发布</h2>
+        <h2 className="flex items-center gap-2 text-lg font-semibold text-app-text">
+          <i className="ri-article-line text-app-accent" />
+          最新发布
+        </h2>
+        <Link
+          href="/articles"
+          className="text-sm text-app-text-muted transition hover:text-app-accent"
+        >
+          全部 →
+        </Link>
       </motion.div>
 
       <motion.div
-        variants={staggerContainer(0.05, 0.05)}
+        variants={staggerContainer(0.03, 0.05)}
         initial="hidden"
         animate="show"
         className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >
         {articles.map((article, i) => (
           <motion.div key={article.id} variants={staggerItem}>
-            <motion.div
-              whileHover={{ y: -4, transition: spring }}
-              className="h-full"
+            <Link
+              href={`/articles/${article.id}`}
+              className="group relative block overflow-hidden rounded-xl border border-app-border bg-app-card transition-all duration-300 hover:border-app-border hover:shadow-md hover:bg-app-card-hover"
             >
-              <Link
-                href={`/articles/${article.id}`}
-                className="group relative block overflow-hidden rounded-xl border border-app-border bg-app-card p-4 transition-all duration-300 hover:border-app-border hover:shadow-md hover:bg-app-card-hover"
-              >
+              <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-app-gradient-from to-app-gradient-to">
+                {article.cover && resolveCover(article.cover) ? (
+                  <img
+                    src={resolveCover(article.cover)!}
+                    alt=""
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <i className="ri-file-text-line text-4xl text-app-accent/30" />
+                  </div>
+                )}
                 {i < 3 && (
-                  <span className="absolute right-3 top-3 rounded-full bg-app-tag px-2.5 py-0.5 text-xs font-medium text-app-tag-text">
-                    最新
+                  <span className="absolute right-3 top-3 rounded-full bg-app-accent/90 px-2.5 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
+                    New
                   </span>
                 )}
-                <h3 className="pr-12 font-medium text-app-text line-clamp-1 transition-opacity group-hover:opacity-90">
+              </div>
+              <div className="p-4">
+                <h3 className="line-clamp-2 font-medium text-app-text transition-colors group-hover:text-app-accent">
                   {article.title}
                 </h3>
                 <p className="mt-1 line-clamp-2 text-sm text-app-text-muted">
                   {article.summary || "暂无摘要"}
                 </p>
-                <div className="mt-3 text-xs text-app-text-muted">
-                  {article.createTime && (
-                    <span>
-                      {new Date(article.createTime).toLocaleDateString("zh-CN")}
-                    </span>
-                  )}
-                </div>
-              </Link>
-            </motion.div>
+                {article.createTime && (
+                  <p className="mt-3 text-xs text-app-text-muted">
+                    {new Date(article.createTime).toLocaleDateString("zh-CN")}
+                  </p>
+                )}
+              </div>
+            </Link>
           </motion.div>
         ))}
       </motion.div>
@@ -70,9 +95,10 @@ export default function LatestReleases({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="rounded-xl border border-dashed border-app-border py-16 text-center text-app-text-muted"
+          className="rounded-xl border border-dashed border-app-border py-16 text-center"
         >
-          暂无内容，敬请期待
+          <i className="ri-article-line mx-auto mb-3 block text-4xl text-app-text-muted/50" />
+          <p className="text-app-text-muted">暂无内容，敬请期待</p>
         </motion.div>
       )}
 
@@ -81,16 +107,15 @@ export default function LatestReleases({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mt-6 text-center"
+          className="mt-8 text-center"
         >
-          <motion.span whileHover={{ x: 2 }} whileTap={{ scale: 0.98 }}>
-            <Link
-              href="/articles"
-              className="inline-flex items-center gap-1 text-sm text-app-accent transition opacity-90 hover:opacity-100"
-            >
-              加载更多 →
-            </Link>
-          </motion.span>
+          <Link
+            href="/articles"
+            className="inline-flex items-center gap-2 rounded-xl border border-app-border bg-app-card px-5 py-2.5 text-sm font-medium text-app-text transition-all hover:border-app-accent/50 hover:bg-app-card-hover"
+          >
+            加载更多
+            <i className="ri-arrow-right-s-line text-base" />
+          </Link>
         </motion.div>
       )}
     </div>
