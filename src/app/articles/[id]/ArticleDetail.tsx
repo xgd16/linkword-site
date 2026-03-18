@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { motion } from "motion/react"
 import type { ArticleDetail } from "@/lib/api"
@@ -69,10 +70,16 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.15 }}
-            className="mt-4 overflow-hidden rounded-xl"
+            className="relative mt-4 aspect-video overflow-hidden rounded-xl"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={getCoverUrl(article.cover)} alt={article.title} className="w-full object-cover" />
+            <Image
+              src={getCoverUrl(article.cover)}
+              alt={article.title}
+              fill
+              unoptimized
+              sizes="(max-width: 768px) 100vw, 768px"
+              className="object-cover"
+            />
           </motion.div>
         )}
 

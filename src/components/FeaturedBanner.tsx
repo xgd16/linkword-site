@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { motion } from "motion/react"
 import type { ArticleItem } from "@/lib/api"
@@ -51,12 +52,15 @@ export default function FeaturedBanner({ articles }: FeaturedBannerProps) {
               href={`/articles/${article.id}`}
               className="group flex gap-4 overflow-hidden rounded-xl border border-app-border bg-app-card p-4 transition-all duration-200 hover:border-app-border hover:bg-app-card-hover"
             >
-              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-app-gradient-from">
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-app-gradient-from">
                 {article.cover && resolveCover(article.cover) ? (
-                  <img
+                  <Image
                     src={resolveCover(article.cover)!}
                     alt=""
-                    className="h-full w-full object-cover"
+                    fill
+                    unoptimized
+                    sizes="64px"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">

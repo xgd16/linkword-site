@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import { motion } from "motion/react"
@@ -58,11 +59,14 @@ export default function NavLinkCard({ link, categoryName }: NavLinkCardProps) {
       {/* 顶部预览区 - 网页截图或占位 */}
       <div className="relative flex aspect-[2.2/1] items-center justify-center overflow-hidden bg-gradient-to-br from-app-gradient-from to-app-gradient-to">
         <div className="absolute inset-0 bg-white/5" />
-        {link.cover ? (
-          <img
+          {link.cover ? (
+          <Image
             src={link.cover.startsWith("http") ? link.cover : `${API_BASE.replace(/\/$/, "")}${link.cover}`}
             alt=""
-            className="h-full w-full object-cover"
+            fill
+            unoptimized
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover"
           />
         ) : (
           <div className="relative flex h-full w-full items-center justify-center p-4">
@@ -72,9 +76,12 @@ export default function NavLinkCard({ link, categoryName }: NavLinkCardProps) {
                 style={{ fontSize: "3rem" }}
               />
             ) : (iconSrc || faviconUrl) ? (
-              <img
+              <Image
                 src={iconError[link.id] ? faviconUrl : iconSrc || faviconUrl}
                 alt=""
+                width={64}
+                height={64}
+                unoptimized
                 className="h-16 w-16 rounded-xl object-contain drop-shadow-md"
                 onError={() => setIconError((prev) => ({ ...prev, [link.id]: true }))}
               />
@@ -94,9 +101,12 @@ export default function NavLinkCard({ link, categoryName }: NavLinkCardProps) {
             {link.icon?.startsWith("ri-") ? (
               <i className={`${link.icon} text-xl text-app-accent`} />
             ) : (iconSrc || faviconUrl) ? (
-              <img
+              <Image
                 src={iconError[link.id] ? faviconUrl : iconSrc || faviconUrl}
                 alt=""
+                width={32}
+                height={32}
+                unoptimized
                 className="h-8 w-8 object-contain"
                 onError={() => setIconError((prev) => ({ ...prev, [link.id]: true }))}
               />

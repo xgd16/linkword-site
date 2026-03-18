@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import Image from "next/image"
 import { motion, AnimatePresence } from "motion/react"
 import type { BannerItem } from "@/lib/api"
 import { getBannerList } from "@/lib/api"
@@ -76,13 +77,16 @@ export default function BannerCarousel() {
                 href={current.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block h-full w-full"
+                className="relative block h-full w-full"
               >
                 {imgUrl ? (
-                  <img
+                  <Image
                     src={imgUrl}
                     alt={current.title || ""}
-                    className="h-full w-full object-cover"
+                    fill
+                    unoptimized
+                    sizes="100vw"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-app-gradient-from">
@@ -93,10 +97,13 @@ export default function BannerCarousel() {
             ) : (
               <>
                 {imgUrl ? (
-                  <img
+                  <Image
                     src={imgUrl}
                     alt={current.title || ""}
-                    className="h-full w-full object-cover"
+                    fill
+                    unoptimized
+                    sizes="100vw"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-app-gradient-from">

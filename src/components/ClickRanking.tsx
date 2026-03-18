@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import { motion } from "motion/react"
 import Link from "next/link"
 import type { NavLinkClickRankItem } from "@/lib/api"
@@ -89,13 +90,16 @@ export default function ClickRanking() {
             </span>
             {item.icon?.startsWith("ri-") ? (
               <i className={`${item.icon} shrink-0 text-base text-app-accent`} />
-            ) : (
-              <img
+            ) : getIconSrc(item.icon, item.url) ? (
+              <Image
                 src={getIconSrc(item.icon, item.url)}
                 alt=""
+                width={20}
+                height={20}
+                unoptimized
                 className="h-5 w-5 shrink-0 rounded object-contain"
               />
-            )}
+            ) : null}
             <span className="min-w-0 flex-1 truncate">{item.title}</span>
             <span className="shrink-0 text-xs text-app-text-muted">
               {item.clickCount} 次

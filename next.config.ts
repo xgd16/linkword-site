@@ -7,6 +7,15 @@ const apiBase =
   "http://localhost:9901";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "**.linkwordx.xyz", pathname: "/**", port: "" },
+      { protocol: "http", hostname: "**.linkwordx.xyz", pathname: "/**", port: "" },
+      { protocol: "https", hostname: "www.google.com", pathname: "/**", port: "" },
+      { protocol: "http", hostname: "localhost", pathname: "/**", port: "" },
+      { protocol: "http", hostname: "127.0.0.1", pathname: "/**", port: "" },
+    ],
+  },
   // sitemap.xml 由 Go 后端直读数据库生成
   async rewrites() {
     return [{ source: "/sitemap.xml", destination: `${apiBase.replace(/\/$/, "")}/sitemap.xml` }];

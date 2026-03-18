@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import { motion } from "motion/react"
@@ -62,17 +63,20 @@ export default function NavLinkDetailClient({ item }: NavLinkDetailProps) {
         <div className="shrink-0 lg:w-[360px] xl:w-[420px]">
           <div className="relative aspect-[2.2/1] overflow-hidden bg-gradient-to-br from-app-gradient-from to-app-gradient-to lg:aspect-square lg:rounded-l-2xl">
             {item.cover ? (
-              <img
+              <Image
                 src={getCoverUrl(item.cover)}
                 alt={item.title}
-                className="h-full w-full object-cover"
+                fill
+                unoptimized
+                sizes="(max-width: 1024px) 100vw, 420px"
+                className="object-cover"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center p-8">
                 {item.icon?.startsWith("ri-") ? (
                   <i className={`${item.icon} text-6xl text-app-accent/80`} />
                 ) : faviconUrl ? (
-                  <img src={faviconUrl} alt="" className="h-24 w-24 object-contain" />
+                  <Image src={faviconUrl} alt="" width={96} height={96} unoptimized className="h-24 w-24 object-contain" />
                 ) : (
                   <span className="flex h-24 w-24 items-center justify-center rounded-2xl bg-app-accent/20 text-4xl font-bold text-app-accent">
                     {item.title.charAt(0).toUpperCase()}
@@ -88,7 +92,7 @@ export default function NavLinkDetailClient({ item }: NavLinkDetailProps) {
                 {item.icon?.startsWith("ri-") ? (
                   <i className={`${item.icon} text-xl text-app-accent`} />
                 ) : faviconUrl ? (
-                  <img src={faviconUrl} alt="" className="h-8 w-8 object-contain" />
+                  <Image src={faviconUrl} alt="" width={32} height={32} unoptimized className="h-8 w-8 object-contain" />
                 ) : (
                   <span className="text-xl font-semibold text-app-accent">
                     {item.title.charAt(0).toUpperCase()}

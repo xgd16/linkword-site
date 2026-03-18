@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { motion } from "motion/react"
 import type { ArticleItem } from "@/lib/api"
@@ -56,10 +57,13 @@ export default function LatestReleases({
             >
               <div className="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-app-gradient-from to-app-gradient-to">
                 {article.cover && resolveCover(article.cover) ? (
-                  <img
+                  <Image
                     src={resolveCover(article.cover)!}
                     alt=""
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    fill
+                    unoptimized
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center">
