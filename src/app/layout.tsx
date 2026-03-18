@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { Suspense } from "react"
 import { Geist, Geist_Mono } from "next/font/google"
 import "remixicon/fonts/remixicon.css"
 import "./globals.css"
@@ -44,7 +45,9 @@ export default async function RootLayout({
         <ThemeProvider>
           <BackgroundEffects />
           <Sidebar navTree={navTree} />
-          <Header />
+          <Suspense fallback={<header className="fixed top-0 right-0 left-0 z-30 h-14 border-b border-app-border/80 bg-app-card/60 lg:left-[220px]" />}>
+            <Header />
+          </Suspense>
           <main className="min-h-screen pt-14 lg:pl-[220px]">
             {children}
           </main>
