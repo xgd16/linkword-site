@@ -5,6 +5,14 @@ import { motion } from "motion/react"
 import type { ArticleItem } from "@/lib/api"
 import { spring } from "@/lib/motion"
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
+
+function getCoverUrl(cover: string): string {
+  if (!cover) return ""
+  if (cover.startsWith("http")) return cover
+  return `${API_BASE.replace(/\/$/, "")}${cover.startsWith("/") ? "" : "/"}${cover}`
+}
+
 interface ArticleCardProps {
   item: ArticleItem
   index?: number
@@ -24,7 +32,7 @@ export default function ArticleCard({ item }: ArticleCardProps) {
           {item.cover && (
             <div className="aspect-video w-full overflow-hidden bg-app-card-hover">
               <motion.img
-                src={item.cover}
+                src={getCoverUrl(item.cover)}
                 alt=""
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
