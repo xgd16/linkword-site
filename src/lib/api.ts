@@ -34,6 +34,7 @@ export interface ArticleItem {
   categoryId: number
   status: number
   slug: string
+  viewCount?: number
   createTime?: string
 }
 
@@ -157,8 +158,23 @@ export interface ArticleDetail {
   categoryId: number
   slug: string
   tagNames: string[]
+  viewCount?: number
   createTime?: string
   updateTime?: string
+}
+
+/** 上报文章阅读 */
+export async function reportArticleView(articleId: number): Promise<void> {
+  try {
+    await fetch(`${(process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")}/article/view`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ articleId }),
+      keepalive: true,
+    })
+  } catch {
+    // 静默失败，不影响阅读
+  }
 }
 
 /** 轮播图列表（公开） */

@@ -45,11 +45,14 @@ export default function ArticleCard({ item }: ArticleCardProps) {
             <p className="mt-1 line-clamp-2 text-sm text-app-text-muted">
               {item.summary || "暂无摘要"}
             </p>
-            {item.createTime && (
-              <p className="mt-2 text-xs text-app-text-muted">
-                {new Date(item.createTime).toLocaleDateString("zh-CN")}
-              </p>
-            )}
+            <div className="mt-2 flex items-center gap-3 text-xs text-app-text-muted">
+              {item.createTime && (
+                <p>{new Date(item.createTime).toLocaleDateString("zh-CN")}</p>
+              )}
+              {typeof item.viewCount === "number" && (
+                <p>{item.viewCount} 次阅读</p>
+              )}
+            </div>
           </div>
         </Link>
     </motion.div>
