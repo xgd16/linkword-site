@@ -6,6 +6,8 @@ import FeaturedBanner from "@/components/FeaturedBanner"
 import LatestReleases from "@/components/LatestReleases"
 import PageMotion from "@/components/PageMotion"
 
+export const dynamic = "force-dynamic"
+
 export const metadata = {
   openGraph: {
     url: getFullUrl("/"),
