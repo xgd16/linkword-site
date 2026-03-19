@@ -108,11 +108,13 @@ function TableOfContents({
   activeHeadingId,
   className,
   scrollable,
+  onItemClick,
 }: {
   headings: TocHeading[]
   activeHeadingId: string | null
   className?: string
   scrollable?: boolean
+  onItemClick?: () => void
 }) {
   if (headings.length === 0) return null
 
@@ -129,6 +131,7 @@ function TableOfContents({
             <li key={heading.id}>
               <a
                 href={`#${heading.id}`}
+                onClick={onItemClick}
                 className={`block rounded-lg px-3 py-2 text-sm transition ${
                   isActive
                     ? "bg-app-accent-muted text-app-accent"
@@ -148,6 +151,7 @@ function TableOfContents({
 export default function ArticleDetailClient({ article }: ArticleDetailProps) {
   const content = article.content || ""
   const [zoomedSrc, setZoomedSrc] = useState<string | null>(null)
+  const [isMobileTocOpen, setIsMobileTocOpen] = useState(false)
   const markdownHeadings = useMemo(() => extractMarkdownHeadings(content), [content])
   const tocHeadings = useMemo(
     () => markdownHeadings.filter((heading) => heading.level >= 2 && heading.level <= 4),
@@ -155,6 +159,8 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
   )
   const [observedHeadingId, setObservedHeadingId] = useState<string | null>(null)
   const activeHeadingId = observedHeadingId ?? tocHeadings[0]?.id ?? null
+  const activeHeadingText =
+    tocHeadings.find((heading) => heading.id === activeHeadingId)?.text || tocHeadings[0]?.text || "查看目录"
 
   const closeZoom = useCallback(() => setZoomedSrc(null), [])
 
@@ -169,9 +175,12 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeZoom()
+      if (e.key === "Escape") {
+        closeZoom()
+        setIsMobileTocOpen(false)
+      }
     }
-    if (zoomedSrc) {
+    if (zoomedSrc || isMobileTocOpen) {
       document.addEventListener("keydown", handleEscape)
       document.body.style.overflow = "hidden"
     }
@@ -179,7 +188,7 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
       document.removeEventListener("keydown", handleEscape)
       document.body.style.overflow = ""
     }
-  }, [zoomedSrc, closeZoom])
+  }, [zoomedSrc, isMobileTocOpen, closeZoom])
 
   useEffect(() => {
     if (tocHeadings.length === 0) return
@@ -316,19 +325,21 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
             </motion.div>
           )}
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: 0.18 }}
-            className="xl:hidden sticky top-16 z-10 mt-6 -mx-4 px-4 py-2 -mb-2 bg-app-bg/95 backdrop-blur-sm"
-          >
-            <TableOfContents
-              headings={tocHeadings}
-              activeHeadingId={activeHeadingId}
-              scrollable
-              className="max-h-[min(50vh,400px)]"
-            />
-          </motion.div>
+          {tocHeadings.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.18 }}
+              className="mt-6 hidden sm:block xl:hidden"
+            >
+              <TableOfContents
+                headings={tocHeadings}
+                activeHeadingId={activeHeadingId}
+                scrollable
+                className="max-h-[min(50vh,400px)]"
+              />
+            </motion.div>
+          )}
 
           <motion.div
             initial={{ opacity: 0 }}
@@ -392,6 +403,76 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
           />
         </motion.aside>
       </div>
+
+      {tocHeadings.length > 0 && (
+        <div className="sm:hidden">
+          <button
+            type="button"
+            aria-expanded={isMobileTocOpen}
+            aria-controls="mobile-article-toc-drawer"
+            aria-label={isMobileTocOpen ? "收起目录" : "展开目录"}
+            onClick={() => setIsMobileTocOpen((open) => !open)}
+            className="fixed left-0 top-1/2 z-30 flex -translate-y-1/2 items-center gap-1 rounded-r-xl border border-l-0 border-app-border bg-app-card/92 px-1.5 py-2 shadow-md backdrop-blur-sm"
+          >
+            <span className="writing-mode-vertical text-[11px] font-medium leading-none text-app-text-muted [writing-mode:vertical-rl]">
+              目录
+            </span>
+            <span
+              className={`text-xs text-app-text-muted transition-transform ${isMobileTocOpen ? "rotate-180" : ""}`}
+              aria-hidden="true"
+            >
+              ›
+            </span>
+          </button>
+
+          <AnimatePresence>
+            {isMobileTocOpen && (
+              <>
+                <motion.button
+                  type="button"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="fixed inset-0 z-30 bg-black/35"
+                  aria-label="关闭目录"
+                  onClick={() => setIsMobileTocOpen(false)}
+                />
+                <motion.aside
+                  id="mobile-article-toc-drawer"
+                  initial={{ x: "-100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "-100%" }}
+                  transition={{ duration: 0.24, ease: "easeOut" }}
+                  className="fixed left-0 top-0 z-40 flex h-dvh w-[min(78vw,18rem)] flex-col border-r border-app-border bg-app-bg/98 p-4 shadow-2xl backdrop-blur-md"
+                >
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-app-text">文章目录</p>
+                      <p className="mt-1 truncate text-xs text-app-text-muted">{activeHeadingText}</p>
+                    </div>
+                    <button
+                      type="button"
+                      className="rounded-xl border border-app-border px-2.5 py-1 text-sm text-app-text-muted"
+                      onClick={() => setIsMobileTocOpen(false)}
+                    >
+                      关闭
+                    </button>
+                  </div>
+
+                  <TableOfContents
+                    headings={tocHeadings}
+                    activeHeadingId={activeHeadingId}
+                    scrollable
+                    onItemClick={() => setIsMobileTocOpen(false)}
+                    className="h-full max-h-none border-none bg-transparent p-0 shadow-none"
+                  />
+                </motion.aside>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
 
       {/* 点击放大预览 */}
       <AnimatePresence>
