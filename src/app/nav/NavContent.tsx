@@ -42,9 +42,15 @@ export default function NavContent({
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(initialLinks.length < total)
   const [showBackTop, setShowBackTop] = useState(false)
+  // 乐观选中：点击时立即更新，不等服务端数据返回
+  const [activeCategoryId, setActiveCategoryId] = useState(categoryId)
   const sentinelRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+
+  useEffect(() => {
+    setActiveCategoryId(categoryId)
+  }, [categoryId])
 
   useEffect(() => {
     const onScroll = () => setShowBackTop(window.scrollY > 300)
@@ -61,6 +67,8 @@ export default function NavContent({
     (href: string, targetCat?: string) => (e: React.MouseEvent) => {
       if (targetCat !== undefined && targetCat === categoryId) return
       e.preventDefault()
+      // 立即更新选中效果，不等待导航完成
+      setActiveCategoryId(targetCat ?? "")
       startTransition(() => router.push(href))
     },
     [router, categoryId]
@@ -168,7 +176,7 @@ export default function NavContent({
             prefetch={false}
             onClick={handleCategoryClick(buildNavHref({ cat: "", keyword }, { categoryId, keyword }), "")}
             className={`rounded-lg border px-3 py-2 text-sm transition ${
-              !categoryId || categoryId === "all"
+              !activeCategoryId || activeCategoryId === "all"
                 ? "border-app-accent bg-app-accent/10 text-app-accent"
                 : "border-app-border text-app-text-muted hover:border-app-border hover:bg-app-card-hover hover:text-app-text"
             }`}
@@ -185,7 +193,7 @@ export default function NavContent({
                 String(cat.id)
               )}
               className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
-                categoryId === String(cat.id)
+                activeCategoryId === String(cat.id)
                   ? "border-app-accent bg-app-accent/10 text-app-accent"
                   : "border-app-border text-app-text-muted hover:border-app-border hover:bg-app-card-hover hover:text-app-text"
               }`}
