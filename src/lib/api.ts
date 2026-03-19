@@ -142,7 +142,8 @@ export async function getPublishedArticleList(params?: {
   if (params?.keyword) q.set('keyword', params.keyword)
   if (params?.categoryId) q.set('categoryId', String(params.categoryId))
   const res = await request<{ list: ArticleItem[]; total: number }>(
-    `/article/published/list?${q.toString()}`
+    `/article/published/list?${q.toString()}`,
+    { cache: "no-store" }
   )
   return { list: res.data?.list ?? [], total: res.data?.total ?? 0 }
 }
