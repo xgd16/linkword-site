@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { useLocale, useTranslations } from "next-intl"
 import { motion } from "motion/react"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import type { NavLinkClickRankItem } from "@/lib/api"
 import { getNavLinkClickRank, reportNavLinkClick } from "@/lib/api"
-import { spring, staggerContainer, staggerItem } from "@/lib/motion"
+import { staggerContainer, staggerItem } from "@/lib/motion"
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
 
@@ -31,16 +32,17 @@ const RANK_COLORS = [
 ]
 
 export default function ClickRanking() {
+  const t = useTranslations("ClickRanking")
+  const locale = useLocale()
   const [list, setList] = useState<NavLinkClickRankItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true)
-    getNavLinkClickRank(10)
+    getNavLinkClickRank(10, locale)
       .then(setList)
       .catch(() => setList([]))
       .finally(() => setLoading(false))
-  }, [])
+  }, [locale])
 
   const handleClick = (item: NavLinkClickRankItem) => {
     reportNavLinkClick(item.id)
@@ -74,9 +76,11 @@ export default function ClickRanking() {
       <div className={cardClass}>
         <div className="flex shrink-0 items-center gap-2">
           <i className="ri-bar-chart-box-line text-lg text-app-accent" />
-          <h3 className="font-semibold text-app-text">网站点击排行榜</h3>
+          <h3 className="font-semibold text-app-text">{t("title")}</h3>
         </div>
-        <p className="mt-4 flex flex-1 items-center justify-center text-sm text-app-text-muted">暂无数据</p>
+        <p className="mt-4 flex flex-1 items-center justify-center text-sm text-app-text-muted">
+          {t("empty")}
+        </p>
       </div>
     )
   }
@@ -90,9 +94,9 @@ export default function ClickRanking() {
     >
       <div className="flex shrink-0 items-center gap-2">
         <i className="ri-bar-chart-box-line text-lg text-app-accent" />
-        <h3 className="font-semibold text-app-text">网站点击排行榜</h3>
+        <h3 className="font-semibold text-app-text">{t("title")}</h3>
       </div>
-      <p className="mt-1 shrink-0 text-sm text-app-text-muted">按点击量排序</p>
+      <p className="mt-1 shrink-0 text-sm text-app-text-muted">{t("sortHint")}</p>
       <div className="mt-3 flex flex-1 flex-col gap-1.5 overflow-y-auto">
         {list.map((item, i) => (
           <motion.a
@@ -125,7 +129,7 @@ export default function ClickRanking() {
             ) : null}
             <span className="min-w-0 flex-1 truncate">{item.title}</span>
             <span className="shrink-0 text-xs text-app-text-muted">
-              {item.clickCount} 次
+              {t("clicks", { count: item.clickCount })}
             </span>
           </motion.a>
         ))}
@@ -134,7 +138,7 @@ export default function ClickRanking() {
         href="/nav"
         className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-app-accent transition hover:underline"
       >
-        全部导航
+        {t("allNav")}
         <i className="ri-arrow-right-s-line" />
       </Link>
     </motion.div>

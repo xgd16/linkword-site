@@ -1,10 +1,13 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
+import createNextIntlPlugin from "next-intl/plugin"
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts")
 
 // SSR/rewrites 时优先使用 API_BASE_SERVER，未配置则用 NEXT_PUBLIC_API_BASE
 const apiBase =
   process.env.API_BASE_SERVER ||
   process.env.NEXT_PUBLIC_API_BASE ||
-  "http://localhost:9901";
+  "http://localhost:9901"
 
 const nextConfig: NextConfig = {
   images: {
@@ -18,8 +21,8 @@ const nextConfig: NextConfig = {
   },
   // sitemap.xml 由 Go 后端直读数据库生成
   async rewrites() {
-    return [{ source: "/sitemap.xml", destination: `${apiBase.replace(/\/$/, "")}/sitemap.xml` }];
+    return [{ source: "/sitemap.xml", destination: `${apiBase.replace(/\/$/, "")}/sitemap.xml` }]
   },
-};
+}
 
-export default nextConfig;
+export default withNextIntl(nextConfig)

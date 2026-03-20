@@ -1,27 +1,34 @@
 import { notFound } from "next/navigation"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getNavLinkDetail } from "@/lib/api"
-import { getFullUrl, resolveImageUrl, truncateForMeta } from "@/lib/site"
+import { resolveImageUrl, truncateForMeta } from "@/lib/site"
+import { fullLocalizedUrl } from "@/lib/locale-url"
 import NavLinkDetailClient from "./NavLinkDetail"
 import type { Metadata } from "next"
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ locale: string; id: string }>
 }): Promise<Metadata> {
-  const { id } = await params
-  const item = await getNavLinkDetail(parseInt(id, 10))
+  const { locale, id } = await params
+  const t = await getTranslations({ locale, namespace: "Metadata" })
+  const item = await getNavLinkDetail(parseInt(id, 10), locale)
   if (!item) {
-    return { title: "网站详情" }
+    return { title: t("navDetailFallbackTitle") }
   }
 
-  const pageUrl = getFullUrl(`/nav/${id}`)
+  const pageUrl = fullLocalizedUrl(locale, `/nav/${id}`)
   const desc = truncateForMeta(item.slogan || item.description)
   const ogImage = resolveImageUrl(item.cover)
+  const fallbackDesc = t("navDetailDescTemplate", {
+    title: item.title,
+    category: item.categoryName,
+  })
 
   return {
     title: item.title,
-    description: desc || `${item.title} - ${item.categoryName}，精选导航资源`,
+    description: desc || fallbackDesc,
     openGraph: {
       type: "website",
       url: pageUrl,
@@ -37,6 +44,10 @@ export async function generateMetadata({
     },
     alternates: {
       canonical: pageUrl,
+      languages: {
+        zh: fullLocalizedUrl("zh", `/nav/${id}`),
+        en: fullLocalizedUrl("en", `/nav/${id}`),
+      },
     },
     keywords: [item.title, item.categoryName, item.slogan].filter(Boolean),
   }
@@ -45,15 +56,17 @@ export async function generateMetadata({
 export default async function NavLinkDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ locale: string; id: string }>
 }) {
-  const { id } = await params
+  const { locale, id } = await params
+  setRequestLocale(locale)
+
   const numId = parseInt(id, 10)
   if (isNaN(numId)) notFound()
 
   let item: Awaited<ReturnType<typeof getNavLinkDetail>>
   try {
-    item = await getNavLinkDetail(numId)
+    item = await getNavLinkDetail(numId, locale)
   } catch {
     item = null
   }
@@ -65,7 +78,7 @@ export default async function NavLinkDetailPage({
     "@type": "WebPage",
     name: item.title,
     description: item.slogan || item.description?.slice(0, 200),
-    url: getFullUrl(`/nav/${item.id}`),
+    url: fullLocalizedUrl(locale, `/nav/${item.id}`),
     mainEntity: {
       "@type": "WebSite",
       name: item.title,

@@ -1,0 +1,140 @@
+{
+  "Common": {
+    "backHome": "Back to home"
+  },
+  "Metadata": {
+    "siteTitle": "LinkWord - Curated links & articles",
+    "siteDescription": "A curated directory of useful sites and tools, plus articles.",
+    "siteKeywords": "directory, links, tools, navigation, articles, resources",
+    "articlesTitle": "Articles",
+    "articlesDescription": "Latest articles and curated reads.",
+    "articlesOgTitle": "Articles - LinkWord",
+    "navTitle": "Directory",
+    "navDescription": "Hand-picked websites and tools.",
+    "navOgTitle": "Directory - LinkWord",
+    "settingsTitle": "Settings",
+    "settingsDescription": "Site preferences",
+    "articleFallbackTitle": "Article",
+    "navDetailFallbackTitle": "Site details",
+    "navDetailDescTemplate": "{title} - {category}, from the curated directory"
+  },
+  "Sidebar": {
+    "home": "Home",
+    "nav": "Directory",
+    "articles": "Articles",
+    "settings": "Settings"
+  },
+  "Header": {
+    "searchPlaceholder": "Search",
+    "nav": "Directory",
+    "articles": "Articles",
+    "settings": "Settings",
+    "settingsAria": "Settings"
+  },
+  "LanguageSwitcher": {
+    "aria": "Change language",
+    "zh": "中文",
+    "en": "English"
+  },
+  "Hero": {
+    "subtitle": "Curated links · Tools & articles",
+    "navCta": "Directory",
+    "articlesCta": "Articles"
+  },
+  "Home": {
+    "ogUrlPath": "/"
+  },
+  "LatestReleases": {
+    "title": "Latest",
+    "viewAll": "View all →",
+    "noSummary": "No summary",
+    "empty": "Nothing here yet.",
+    "loadMore": "Load more"
+  },
+  "ClickRanking": {
+    "title": "Popular links",
+    "empty": "No data yet",
+    "sortHint": "Sorted by clicks",
+    "clicks": "{count} clicks",
+    "allNav": "Browse directory"
+  },
+  "Banner": {
+    "empty": "No banners",
+    "slideN": "Slide {n}",
+    "prev": "Previous slide",
+    "next": "Next slide",
+    "enlarge": "Click to enlarge",
+    "closeLightbox": "Close preview",
+    "openLink": "Open link"
+  },
+  "FeaturedBanner": {},
+  "NavLinkCard": {
+    "directLink": "Direct link",
+    "detailIntro": "Details",
+    "visit": "Visit →",
+    "viewDetail": "View details →"
+  },
+  "NavContent": {
+    "noMatch": "No matching links",
+    "progress": "Progress",
+    "backToTopAria": "Back to top",
+    "allCategories": "All"
+  },
+  "NavPage": {
+    "loading": "Loading..."
+  },
+  "ArticlesPage": {
+    "empty": "No articles yet",
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "ArticleDetail": {
+    "backList": "← Back to articles",
+    "views": "{count} views",
+    "viewsTitle": "View count",
+    "tocNavAria": "Table of contents",
+    "tocTitle": "Contents",
+    "tocFallback": "View contents",
+    "expandToc": "Open table of contents",
+    "collapseToc": "Close table of contents",
+    "tocDrawerTitle": "Table of contents",
+    "closeTocAria": "Close table of contents",
+    "close": "Close",
+    "zoomAlt": "Enlarged image",
+    "zoomHint": "Press ESC or click the backdrop to close"
+  },
+  "ArticleCard": {
+    "noSummary": "No summary",
+    "views": "{count} views"
+  },
+  "NavDetail": {
+    "backList": "← Back to directory",
+    "visitSite": "Visit site",
+    "noDescription": "No description yet"
+  },
+  "SettingsPage": {
+    "title": "Settings"
+  },
+  "Settings": {
+    "themeSection": "Theme",
+    "themeHint": "Choose colors and style",
+    "navBehaviorSection": "Link card behavior",
+    "navBehaviorHint": "What happens when you click a directory card",
+    "detailLabel": "Open detail page",
+    "detailDesc": "Open the site detail page in a new tab",
+    "directLabel": "Go to site directly",
+    "directDesc": "Open the destination website directly"
+  },
+  "Theme": {
+    "openAria": "Theme settings",
+    "chooseAria": "Choose theme",
+    "light": "Light",
+    "dark": "Dark",
+    "sepia": "Sepia",
+    "ocean": "Ocean",
+    "forest": "Forest"
+  },
+  "SidebarHot": {
+    "title": "Hot channels"
+  }
+}

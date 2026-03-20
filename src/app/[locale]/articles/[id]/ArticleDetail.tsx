@@ -1,7 +1,8 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
+import { useLocale, useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { motion, AnimatePresence } from "motion/react"
@@ -109,21 +110,25 @@ function TableOfContents({
   className,
   scrollable,
   onItemClick,
+  navAriaLabel,
+  tocTitle,
 }: {
   headings: TocHeading[]
   activeHeadingId: string | null
   className?: string
   scrollable?: boolean
   onItemClick?: () => void
+  navAriaLabel: string
+  tocTitle: string
 }) {
   if (headings.length === 0) return null
 
   return (
     <nav
       className={`rounded-2xl border border-app-border bg-app-card/90 p-4 backdrop-blur-sm ${scrollable ? "overflow-y-auto" : ""} ${className || ""}`}
-      aria-label="文章目录"
+      aria-label={navAriaLabel}
     >
-      <p className="text-sm font-semibold text-app-text shrink-0">目录</p>
+      <p className="text-sm font-semibold text-app-text shrink-0">{tocTitle}</p>
       <ol className="mt-3 space-y-1.5">
         {headings.map((heading) => {
           const isActive = activeHeadingId === heading.id
@@ -149,6 +154,9 @@ function TableOfContents({
 }
 
 export default function ArticleDetailClient({ article }: ArticleDetailProps) {
+  const t = useTranslations("ArticleDetail")
+  const locale = useLocale()
+  const dateLocale = locale === "zh" ? "zh-CN" : "en-US"
   const content = article.content || ""
   const [zoomedSrc, setZoomedSrc] = useState<string | null>(null)
   const [isMobileTocOpen, setIsMobileTocOpen] = useState(false)
@@ -160,7 +168,9 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
   const [observedHeadingId, setObservedHeadingId] = useState<string | null>(null)
   const activeHeadingId = observedHeadingId ?? tocHeadings[0]?.id ?? null
   const activeHeadingText =
-    tocHeadings.find((heading) => heading.id === activeHeadingId)?.text || tocHeadings[0]?.text || "查看目录"
+    tocHeadings.find((heading) => heading.id === activeHeadingId)?.text ||
+    tocHeadings[0]?.text ||
+    t("tocFallback")
 
   const closeZoom = useCallback(() => setZoomedSrc(null), [])
 
@@ -263,7 +273,7 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
           href="/articles"
           className="mb-6 inline-block text-sm text-app-text-muted transition hover:text-app-text"
         >
-          ← 返回文章列表
+          {t("backList")}
         </Link>
       </motion.div>
 
@@ -284,10 +294,10 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
             className="mt-2 flex flex-wrap items-center gap-2 text-sm text-app-text-muted"
           >
             {article.createTime && (
-              <time>{new Date(article.createTime).toLocaleString("zh-CN")}</time>
+              <time>{new Date(article.createTime).toLocaleString(dateLocale)}</time>
             )}
             {displayViewCount !== null && (
-              <span title="阅读次数">{displayViewCount} 次阅读</span>
+              <span title={t("viewsTitle")}>{t("views", { count: displayViewCount })}</span>
             )}
             {article.tagNames?.length > 0 && (
               <span className="flex gap-1">
@@ -337,6 +347,8 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
                 activeHeadingId={activeHeadingId}
                 scrollable
                 className="max-h-[min(50vh,400px)]"
+                navAriaLabel={t("tocNavAria")}
+                tocTitle={t("tocTitle")}
               />
             </motion.div>
           )}
@@ -400,6 +412,8 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
             activeHeadingId={activeHeadingId}
             scrollable
             className="max-h-[calc(100vh-8rem)]"
+            navAriaLabel={t("tocNavAria")}
+            tocTitle={t("tocTitle")}
           />
         </motion.aside>
       </div>
@@ -410,12 +424,12 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
             type="button"
             aria-expanded={isMobileTocOpen}
             aria-controls="mobile-article-toc-drawer"
-            aria-label={isMobileTocOpen ? "收起目录" : "展开目录"}
+            aria-label={isMobileTocOpen ? t("collapseToc") : t("expandToc")}
             onClick={() => setIsMobileTocOpen((open) => !open)}
             className="fixed left-0 top-1/2 z-30 flex -translate-y-1/2 items-center gap-1 rounded-r-xl border border-l-0 border-app-border bg-app-card/92 px-1.5 py-2 shadow-md backdrop-blur-sm"
           >
             <span className="writing-mode-vertical text-[11px] font-medium leading-none text-app-text-muted [writing-mode:vertical-rl]">
-              目录
+              {t("tocTitle")}
             </span>
             <span
               className={`text-xs text-app-text-muted transition-transform ${isMobileTocOpen ? "rotate-180" : ""}`}
@@ -435,7 +449,7 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                   className="fixed inset-0 z-30 bg-black/35"
-                  aria-label="关闭目录"
+                  aria-label={t("closeTocAria")}
                   onClick={() => setIsMobileTocOpen(false)}
                 />
                 <motion.aside
@@ -448,7 +462,7 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
                 >
                   <div className="mb-3 flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-app-text">文章目录</p>
+                      <p className="text-sm font-semibold text-app-text">{t("tocDrawerTitle")}</p>
                       <p className="mt-1 truncate text-xs text-app-text-muted">{activeHeadingText}</p>
                     </div>
                     <button
@@ -456,7 +470,7 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
                       className="rounded-xl border border-app-border px-2.5 py-1 text-sm text-app-text-muted"
                       onClick={() => setIsMobileTocOpen(false)}
                     >
-                      关闭
+                      {t("close")}
                     </button>
                   </div>
 
@@ -466,6 +480,8 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
                     scrollable
                     onItemClick={() => setIsMobileTocOpen(false)}
                     className="h-full max-h-none border-none bg-transparent p-0 shadow-none"
+                    navAriaLabel={t("tocNavAria")}
+                    tocTitle={t("tocTitle")}
                   />
                 </motion.aside>
               </>
@@ -496,10 +512,12 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={zoomedSrc}
-                alt="放大预览"
+                alt={t("zoomAlt")}
                 className="max-h-[90vh] max-w-full rounded-lg object-contain shadow-2xl"
               />
-              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm text-white/70">按 ESC 或点击背景关闭</span>
+              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-sm text-white/70">
+                {t("zoomHint")}
+              </span>
             </motion.div>
           </motion.div>
         )}

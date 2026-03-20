@@ -1,0 +1,140 @@
+{
+  "Common": {
+    "backHome": "返回首页"
+  },
+  "Metadata": {
+    "siteTitle": "LinkWord - 网站导航与文章",
+    "siteDescription": "网站导航 + 文章系统，精选资源与资讯",
+    "siteKeywords": "网站导航, 精选链接, 工具导航, 文章, 资讯",
+    "articlesTitle": "文章列表",
+    "articlesDescription": "最新文章与资讯，精选内容推荐",
+    "articlesOgTitle": "文章列表 - LinkWord",
+    "navTitle": "网站导航",
+    "navDescription": "精选网站与工具导航，发现优质工具与资源",
+    "navOgTitle": "网站导航 - LinkWord",
+    "settingsTitle": "设置",
+    "settingsDescription": "个人偏好设置",
+    "articleFallbackTitle": "文章详情",
+    "navDetailFallbackTitle": "网站详情",
+    "navDetailDescTemplate": "{title} - {category}，精选导航资源"
+  },
+  "Sidebar": {
+    "home": "网站首页",
+    "nav": "网站导航",
+    "articles": "文章列表",
+    "settings": "设置"
+  },
+  "Header": {
+    "searchPlaceholder": "搜索",
+    "nav": "导航",
+    "articles": "文章",
+    "settings": "设置",
+    "settingsAria": "设置"
+  },
+  "LanguageSwitcher": {
+    "aria": "切换语言",
+    "zh": "中文",
+    "en": "English"
+  },
+  "Hero": {
+    "subtitle": "精选网站导航 · 实用工具与文章",
+    "navCta": "网站导航",
+    "articlesCta": "文章中心"
+  },
+  "Home": {
+    "ogUrlPath": "/"
+  },
+  "LatestReleases": {
+    "title": "最新发布",
+    "viewAll": "全部 →",
+    "noSummary": "暂无摘要",
+    "empty": "暂无内容，敬请期待",
+    "loadMore": "加载更多"
+  },
+  "ClickRanking": {
+    "title": "网站点击排行榜",
+    "empty": "暂无数据",
+    "sortHint": "按点击量排序",
+    "clicks": "{count} 次",
+    "allNav": "全部导航"
+  },
+  "Banner": {
+    "empty": "暂无轮播图",
+    "slideN": "第 {n} 张",
+    "prev": "上一张",
+    "next": "下一张",
+    "enlarge": "点击放大查看",
+    "closeLightbox": "关闭预览",
+    "openLink": "打开链接"
+  },
+  "FeaturedBanner": {},
+  "NavLinkCard": {
+    "directLink": "直达链接",
+    "detailIntro": "详细介绍",
+    "visit": "访问 →",
+    "viewDetail": "查看详情 →"
+  },
+  "NavContent": {
+    "noMatch": "暂无匹配的导航",
+    "progress": "进度",
+    "backToTopAria": "返回顶部",
+    "allCategories": "全部"
+  },
+  "NavPage": {
+    "loading": "加载中..."
+  },
+  "ArticlesPage": {
+    "empty": "暂无文章",
+    "prev": "上一页",
+    "next": "下一页"
+  },
+  "ArticleDetail": {
+    "backList": "← 返回文章列表",
+    "views": "{count} 次阅读",
+    "viewsTitle": "阅读次数",
+    "tocNavAria": "文章目录",
+    "tocTitle": "目录",
+    "tocFallback": "查看目录",
+    "expandToc": "展开目录",
+    "collapseToc": "收起目录",
+    "tocDrawerTitle": "文章目录",
+    "closeTocAria": "关闭目录",
+    "close": "关闭",
+    "zoomAlt": "放大预览",
+    "zoomHint": "按 ESC 或点击背景关闭"
+  },
+  "ArticleCard": {
+    "noSummary": "暂无摘要",
+    "views": "{count} 次阅读"
+  },
+  "NavDetail": {
+    "backList": "← 返回导航列表",
+    "visitSite": "访问网站",
+    "noDescription": "暂无详细介绍"
+  },
+  "SettingsPage": {
+    "title": "设置"
+  },
+  "Settings": {
+    "themeSection": "网站主题",
+    "themeHint": "选择界面配色与风格",
+    "navBehaviorSection": "导航点击行为",
+    "navBehaviorHint": "设置点击导航卡片时的行为",
+    "detailLabel": "打开详情页",
+    "detailDesc": "点击导航卡片时在新标签页打开网站详细介绍",
+    "directLabel": "直接跳转网站",
+    "directDesc": "点击导航卡片时直接打开目标网站"
+  },
+  "Theme": {
+    "openAria": "主题设置",
+    "chooseAria": "选择主题",
+    "light": "浅色",
+    "dark": "深色",
+    "sepia": "护眼",
+    "ocean": "海洋",
+    "forest": "森林"
+  },
+  "SidebarHot": {
+    "title": "热门频道"
+  }
+}

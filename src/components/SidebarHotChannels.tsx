@@ -1,16 +1,20 @@
-import Link from "next/link"
+import { getTranslations } from "next-intl/server"
+import { Link } from "@/i18n/navigation"
+import { getLocale } from "next-intl/server"
 import { getNavCategoriesHot } from "@/lib/api"
 
 /** 热门频道（服务端异步），供 layout 用 Suspense 包裹 */
 export default async function SidebarHotChannels() {
-  const list = await getNavCategoriesHot(5)
+  const t = await getTranslations("SidebarHot")
+  const locale = await getLocale()
+  const list = await getNavCategoriesHot(5, locale)
   if (list.length === 0) return null
   return (
     <>
       <div className="my-4 border-t border-app-border" />
       <div className="space-y-1 px-2">
         <p className="px-3 py-1 text-xs font-medium uppercase tracking-wider text-app-text-muted">
-          热门频道
+          {t("title")}
         </p>
         {list.map((cat) => (
           <Link

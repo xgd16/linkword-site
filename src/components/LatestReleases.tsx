@@ -1,7 +1,8 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
+import { useLocale, useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { motion } from "motion/react"
 import type { ArticleItem } from "@/lib/api"
 import { spring, staggerContainer, staggerItem } from "@/lib/motion"
@@ -23,6 +24,10 @@ export default function LatestReleases({
   articles,
   total,
 }: LatestReleasesProps) {
+  const t = useTranslations("LatestReleases")
+  const locale = useLocale()
+  const dateLocale = locale === "zh" ? "zh-CN" : "en-US"
+
   return (
     <div>
       <motion.div
@@ -33,13 +38,13 @@ export default function LatestReleases({
       >
         <h2 className="flex items-center gap-2 text-lg font-semibold text-app-text">
           <i className="ri-article-line text-app-accent" />
-          最新发布
+          {t("title")}
         </h2>
         <Link
           href="/articles"
           className="text-sm text-app-text-muted transition hover:text-app-accent"
         >
-          全部 →
+          {t("viewAll")}
         </Link>
       </motion.div>
 
@@ -82,11 +87,11 @@ export default function LatestReleases({
                   {article.title}
                 </h3>
                 <p className="mt-1 line-clamp-2 text-sm text-app-text-muted">
-                  {article.summary || "暂无摘要"}
+                  {article.summary || t("noSummary")}
                 </p>
                 {article.createTime && (
                   <p className="mt-3 text-xs text-app-text-muted">
-                    {new Date(article.createTime).toLocaleDateString("zh-CN")}
+                    {new Date(article.createTime).toLocaleDateString(dateLocale)}
                   </p>
                 )}
               </div>
@@ -103,7 +108,7 @@ export default function LatestReleases({
           className="rounded-xl border border-dashed border-app-border py-16 text-center"
         >
           <i className="ri-article-line mx-auto mb-3 block text-4xl text-app-text-muted/50" />
-          <p className="text-app-text-muted">暂无内容，敬请期待</p>
+          <p className="text-app-text-muted">{t("empty")}</p>
         </motion.div>
       )}
 
@@ -118,7 +123,7 @@ export default function LatestReleases({
             href="/articles"
             className="inline-flex items-center gap-2 rounded-xl border border-app-border bg-app-card px-5 py-2.5 text-sm font-medium text-app-text transition-all hover:border-app-accent/50 hover:bg-app-card-hover"
           >
-            加载更多
+            {t("loadMore")}
             <i className="ri-arrow-right-s-line text-base" />
           </Link>
         </motion.div>

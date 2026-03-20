@@ -1,16 +1,18 @@
 "use client"
 
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { motion } from "motion/react"
 import { staggerContainer, staggerItem } from "@/lib/motion"
 import { SITE_NAME } from "@/lib/site"
 
-const quickLinks = [
-  { href: "/nav", label: "网站导航", icon: "ri-links-line" },
-  { href: "/articles", label: "文章中心", icon: "ri-article-line" },
-]
-
 export default function HeroSection() {
+  const t = useTranslations("Hero")
+  const quickLinks = [
+    { href: "/nav" as const, labelKey: "navCta" as const, icon: "ri-links-line" },
+    { href: "/articles" as const, labelKey: "articlesCta" as const, icon: "ri-article-line" },
+  ]
+
   return (
     <motion.section
       variants={staggerContainer(0, 0.06)}
@@ -30,7 +32,7 @@ export default function HeroSection() {
           variants={staggerItem}
           className="mt-2 text-base text-app-text-muted sm:text-lg"
         >
-          精选网站导航 · 实用工具与文章
+          {t("subtitle")}
         </motion.p>
         <motion.div
           variants={staggerItem}
@@ -43,7 +45,7 @@ export default function HeroSection() {
                 className="group inline-flex items-center gap-2 rounded-xl border border-app-border bg-app-card px-4 py-2.5 text-sm font-medium text-app-text transition-all duration-200 hover:border-app-accent/50 hover:bg-app-card-hover hover:shadow-sm"
               >
                 <i className={`${link.icon} text-base text-app-accent`} />
-                {link.label}
+                {t(link.labelKey)}
               </Link>
             </span>
           ))}

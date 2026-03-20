@@ -3,10 +3,14 @@ const DEFAULT_API = "http://localhost:9901"
 /** 客户端请求使用公开 API 地址；服务端渲染（SSR）使用 API_BASE_SERVER（若配置） */
 function getApiBase(): string {
   if (typeof window === "undefined" && process.env.API_BASE_SERVER) {
-    console.log("[SSR] API_BASE_SERVER:", process.env.API_BASE_SERVER, "→ using:", getApiBase())
     return process.env.API_BASE_SERVER.replace(/\/$/, "")
   }
   return (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
+}
+
+/** 与后端约定：zh | en */
+export function apiLocale(locale?: string): "zh" | "en" {
+  return locale === "en" ? "en" : "zh"
 }
 
 export interface NavTreeLink {
@@ -49,17 +53,18 @@ async function request<T>(url: string, init?: RequestInit): Promise<ApiResponse<
   const path = url.startsWith("/") ? url : `/${url}`
   const res = await fetch(`${base}${path}`, {
     ...init,
-    headers: { 'Content-Type': 'application/json', ...init?.headers },
+    headers: { "Content-Type": "application/json", ...init?.headers },
   })
   const json = await res.json()
   if (json.code !== 0 && json.code !== undefined) {
-    throw new Error(json.message || json.msg || '请求失败')
+    throw new Error(json.message || json.msg || "请求失败")
   }
   return json as ApiResponse<T>
 }
 
-export async function getNavTree(): Promise<NavTreeCategory[]> {
-  const res = await request<{ tree: NavTreeCategory[] }>('/nav/tree')
+export async function getNavTree(locale?: string): Promise<NavTreeCategory[]> {
+  const loc = apiLocale(locale)
+  const res = await request<{ tree: NavTreeCategory[] }>(`/nav/tree?locale=${loc}`)
   return res.data?.tree ?? []
 }
 
@@ -81,15 +86,19 @@ export interface NavLinkWithCategory {
   description: string
 }
 
-export async function getNavCategories(): Promise<NavCategoryBrief[]> {
-  const res = await request<{ list: NavCategoryBrief[] }>('/nav/categories')
+export async function getNavCategories(locale?: string): Promise<NavCategoryBrief[]> {
+  const loc = apiLocale(locale)
+  const res = await request<{ list: NavCategoryBrief[] }>(`/nav/categories?locale=${loc}`)
   const list = res.data?.list ?? []
   return list.map((c) => ({ id: c.id, name: c.name, icon: c.icon }))
 }
 
 /** 热门频道：按分类下链接总点击数排序，用于侧边栏 */
-export async function getNavCategoriesHot(limit = 5): Promise<NavCategoryBrief[]> {
-  const res = await request<{ list: NavCategoryBrief[] }>(`/nav/categories/hot?limit=${limit}`)
+export async function getNavCategoriesHot(limit = 5, locale?: string): Promise<NavCategoryBrief[]> {
+  const loc = apiLocale(locale)
+  const res = await request<{ list: NavCategoryBrief[] }>(
+    `/nav/categories/hot?limit=${limit}&locale=${loc}`
+  )
   const list = res.data?.list ?? []
   return list.map((c) => ({ id: c.id, name: c.name, icon: c.icon }))
 }
@@ -97,9 +106,9 @@ export async function getNavCategoriesHot(limit = 5): Promise<NavCategoryBrief[]
 /** 上报链接点击 */
 export async function reportNavLinkClick(linkId: number): Promise<void> {
   try {
-    await fetch(`${(process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, '')}/nav/link/click`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    await fetch(`${(process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")}/nav/link/click`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ linkId }),
       keepalive: true,
     })
@@ -109,8 +118,11 @@ export async function reportNavLinkClick(linkId: number): Promise<void> {
 }
 
 /** 获取链接详情（公开） */
-export async function getNavLinkDetail(id: number): Promise<NavLinkWithCategory | null> {
-  const res = await request<{ item: NavLinkWithCategory | null }>(`/nav/link/detail?id=${id}`)
+export async function getNavLinkDetail(id: number, locale?: string): Promise<NavLinkWithCategory | null> {
+  const loc = apiLocale(locale)
+  const res = await request<{ item: NavLinkWithCategory | null }>(
+    `/nav/link/detail?id=${id}&locale=${loc}`
+  )
   return res.data?.item ?? null
 }
 
@@ -119,12 +131,15 @@ export async function getNavLinksPaginated(params?: {
   pageSize?: number
   categoryId?: number
   keyword?: string
+  locale?: string
 }): Promise<{ list: NavLinkWithCategory[]; total: number }> {
+  const loc = apiLocale(params?.locale)
   const q = new URLSearchParams()
-  if (params?.pageNum) q.set('pageNum', String(params.pageNum))
-  if (params?.pageSize) q.set('pageSize', String(params.pageSize))
-  if (params?.categoryId) q.set('categoryId', String(params.categoryId))
-  if (params?.keyword) q.set('keyword', params.keyword)
+  q.set("locale", loc)
+  if (params?.pageNum) q.set("pageNum", String(params.pageNum))
+  if (params?.pageSize) q.set("pageSize", String(params.pageSize))
+  if (params?.categoryId) q.set("categoryId", String(params.categoryId))
+  if (params?.keyword) q.set("keyword", params.keyword)
   const res = await request<{ list: NavLinkWithCategory[]; total: number }>(
     `/nav/links?${q.toString()}`
   )
@@ -136,12 +151,15 @@ export async function getPublishedArticleList(params?: {
   pageSize?: number
   keyword?: string
   categoryId?: number
+  locale?: string
 }): Promise<{ list: ArticleItem[]; total: number }> {
+  const loc = apiLocale(params?.locale)
   const q = new URLSearchParams()
-  if (params?.pageNum) q.set('pageNum', String(params.pageNum))
-  if (params?.pageSize) q.set('pageSize', String(params.pageSize))
-  if (params?.keyword) q.set('keyword', params.keyword)
-  if (params?.categoryId) q.set('categoryId', String(params.categoryId))
+  q.set("locale", loc)
+  if (params?.pageNum) q.set("pageNum", String(params.pageNum))
+  if (params?.pageSize) q.set("pageSize", String(params.pageSize))
+  if (params?.keyword) q.set("keyword", params.keyword)
+  if (params?.categoryId) q.set("categoryId", String(params.categoryId))
   const res = await request<{ list: ArticleItem[]; total: number }>(
     `/article/published/list?${q.toString()}`,
     { cache: "no-store" }
@@ -179,7 +197,7 @@ export async function reportArticleView(articleId: number): Promise<void> {
 
 /** 轮播图列表（公开） */
 export async function getBannerList(): Promise<BannerItem[]> {
-  const res = await request<{ list: BannerItem[] }>('/banner/list/public')
+  const res = await request<{ list: BannerItem[] }>("/banner/list/public")
   return res.data?.list ?? []
 }
 
@@ -192,8 +210,11 @@ export interface BannerItem {
 }
 
 /** 导航点击排行榜 */
-export async function getNavLinkClickRank(limit = 10): Promise<NavLinkClickRankItem[]> {
-  const res = await request<{ list: NavLinkClickRankItem[] }>(`/nav/links/click-rank?limit=${limit}`)
+export async function getNavLinkClickRank(limit = 10, locale?: string): Promise<NavLinkClickRankItem[]> {
+  const loc = apiLocale(locale)
+  const res = await request<{ list: NavLinkClickRankItem[] }>(
+    `/nav/links/click-rank?limit=${limit}&locale=${loc}`
+  )
   return res.data?.list ?? []
 }
 
@@ -210,12 +231,13 @@ export interface NavLinkClickRankItem {
 export async function getPublishedArticleDetail(params: {
   id?: number
   slug?: string
+  locale?: string
 }): Promise<ArticleDetail | null> {
+  const loc = apiLocale(params.locale)
   const q = new URLSearchParams()
-  if (params.id) q.set('id', String(params.id))
-  if (params.slug) q.set('slug', params.slug)
-  const res = await request<ArticleDetail>(
-    `/article/published/detail?${q.toString()}`
-  )
+  q.set("locale", loc)
+  if (params.id) q.set("id", String(params.id))
+  if (params.slug) q.set("slug", params.slug)
+  const res = await request<ArticleDetail>(`/article/published/detail?${q.toString()}`)
   return res.data ?? null
 }

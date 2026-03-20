@@ -37,8 +37,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setNavClickModeState(getStoredNavClickMode())
-    setMounted(true)
+    queueMicrotask(() => {
+      setNavClickModeState(getStoredNavClickMode())
+      setMounted(true)
+    })
   }, [])
 
   const setNavClickMode = useCallback((mode: NavClickMode) => {

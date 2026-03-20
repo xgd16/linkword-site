@@ -1,12 +1,15 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
-import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { useTranslations } from "next-intl"
+import { Link, useRouter, usePathname } from "@/i18n/navigation"
 import { motion } from "motion/react"
 import ThemeSelector from "./ThemeSelector"
+import LanguageSwitcher from "./LanguageSwitcher"
 
 export default function Header() {
+  const t = useTranslations("Header")
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -32,7 +35,6 @@ export default function Header() {
     router.push(getNavUrl(keyword))
   }
 
-
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
@@ -54,7 +56,7 @@ export default function Header() {
                   router.push(getNavUrl(v))
                 }
               }}
-              placeholder="搜索"
+              placeholder={t("searchPlaceholder")}
               className="w-full rounded-lg border border-app-border bg-app-card-hover py-2 pl-9 pr-4 text-sm text-app-text placeholder-app-text-muted outline-none transition placeholder:italic focus:border-app-accent focus:ring-2 focus:ring-app-accent/20"
             />
           </div>
@@ -64,32 +66,25 @@ export default function Header() {
             href="/nav"
             className="rounded-lg px-3 py-2 text-sm text-app-text-muted transition hover:text-app-text lg:hidden"
           >
-            导航
+            {t("nav")}
           </Link>
           <Link
             href="/articles"
             className="rounded-lg px-3 py-2 text-sm text-app-text-muted transition hover:text-app-text lg:hidden"
           >
-            文章
+            {t("articles")}
           </Link>
+          <LanguageSwitcher />
           <Link
             href="/settings"
             className="rounded-lg p-2 text-app-text-muted transition hover:text-app-text"
-            aria-label="设置"
+            aria-label={t("settingsAria")}
           >
             <i className="ri-settings-3-line text-lg" />
           </Link>
           <ThemeSelector />
         </div>
       </div>
-      {/* <div className="ml-4 flex items-center gap-3">
-        <div className="hidden text-right sm:block">
-          <p className="text-sm font-medium text-app-text">
-            LinkWord
-          </p>
-          <p className="text-xs text-app-text-muted">网站导航 + 文章系统</p>
-        </div>
-      </div> */}
     </motion.header>
   )
 }

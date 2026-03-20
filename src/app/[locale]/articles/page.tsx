@@ -1,27 +1,44 @@
-import Link from "next/link"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { Link } from "@/i18n/navigation"
 import { getPublishedArticleList } from "@/lib/api"
 import ArticlesGrid from "./ArticlesGrid"
 import PageMotion from "@/components/PageMotion"
+import { fullLocalizedUrl } from "@/lib/locale-url"
 
-import { getFullUrl } from "@/lib/site"
-
-export const metadata = {
-  title: "文章列表",
-  description: "最新文章与资讯，精选内容推荐",
-  openGraph: {
-    url: getFullUrl("/articles"),
-    title: "文章列表 - LinkWord",
-    description: "最新文章与资讯，精选内容推荐",
-  },
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "Metadata" })
+  const title = t("articlesTitle")
+  const description = t("articlesDescription")
+  return {
+    title,
+    description,
+    openGraph: {
+      url: fullLocalizedUrl(locale, "/articles"),
+      title: t("articlesOgTitle"),
+      description,
+    },
+  }
 }
 
 interface PageProps {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{ page?: string; keyword?: string; categoryId?: string }>
 }
 
-export default async function ArticlesPage({ searchParams }: PageProps) {
-  const params = await searchParams
-  const page = Math.max(1, parseInt(params.page ?? "1", 10))
+export default async function ArticlesPage({ params, searchParams }: PageProps) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations("ArticlesPage")
+  const tMeta = await getTranslations({ locale, namespace: "Metadata" })
+  const tCommon = await getTranslations({ locale, namespace: "Common" })
+
+  const sp = await searchParams
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10))
   const pageSize = 12
 
   let res: Awaited<ReturnType<typeof getPublishedArticleList>>
@@ -29,8 +46,9 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
     res = await getPublishedArticleList({
       pageNum: page,
       pageSize,
-      keyword: params.keyword || undefined,
-      categoryId: params.categoryId ? parseInt(params.categoryId, 10) : undefined,
+      keyword: sp.keyword || undefined,
+      categoryId: sp.categoryId ? parseInt(sp.categoryId, 10) : undefined,
+      locale,
     })
   } catch {
     res = { list: [], total: 0 }
@@ -42,9 +60,9 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
   return (
     <PageMotion className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-app-text">文章列表</h1>
+        <h1 className="text-xl font-semibold text-app-text">{tMeta("articlesTitle")}</h1>
         <Link href="/" className="text-sm text-app-text-muted transition hover:text-app-text">
-          返回首页
+          {tCommon("backHome")}
         </Link>
       </div>
 
@@ -52,7 +70,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
 
       {list.length === 0 && (
         <div className="rounded-xl border border-dashed border-app-border py-16 text-center text-app-text-muted">
-          暂无文章
+          {t("empty")}
         </div>
       )}
 
@@ -64,7 +82,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
               prefetch={false}
               className="rounded-lg border border-app-border px-4 py-2 text-sm text-app-text-muted transition hover:bg-app-card-hover hover:text-app-text"
             >
-              上一页
+              {t("prev")}
             </Link>
           )}
           <span className="px-4 py-2 text-sm text-app-text-muted">
@@ -76,7 +94,7 @@ export default async function ArticlesPage({ searchParams }: PageProps) {
               prefetch={false}
               className="rounded-lg border border-app-border px-4 py-2 text-sm text-app-text-muted transition hover:bg-app-card-hover hover:text-app-text"
             >
-              下一页
+              {t("next")}
             </Link>
           )}
         </div>

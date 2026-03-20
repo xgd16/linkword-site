@@ -1,7 +1,8 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import ReactMarkdown from "react-markdown"
 import { motion } from "motion/react"
 import PageMotion from "@/components/PageMotion"
@@ -30,6 +31,7 @@ interface NavLinkDetailProps {
 }
 
 export default function NavLinkDetailClient({ item }: NavLinkDetailProps) {
+  const t = useTranslations("NavDetail")
   const domain = getDomain(item.url)
   const faviconUrl = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=64` : ""
 
@@ -49,7 +51,7 @@ export default function NavLinkDetailClient({ item }: NavLinkDetailProps) {
           href="/nav"
           className="mb-6 inline-block text-sm text-app-text-muted transition hover:text-app-text"
         >
-          ← 返回导航列表
+          {t("backList")}
         </Link>
       </motion.div>
 
@@ -59,7 +61,6 @@ export default function NavLinkDetailClient({ item }: NavLinkDetailProps) {
         transition={{ duration: 0.3, delay: 0.05 }}
         className="flex flex-col overflow-hidden rounded-2xl border border-app-border bg-app-card lg:flex-row"
       >
-        {/* 左侧：封面 + 元信息（宽屏时固定宽度） */}
         <div className="shrink-0 lg:w-[360px] xl:w-[420px]">
           <div className="relative aspect-[2.2/1] overflow-hidden bg-gradient-to-br from-app-gradient-from to-app-gradient-to lg:aspect-square lg:rounded-l-2xl">
             {item.cover ? (
@@ -86,7 +87,6 @@ export default function NavLinkDetailClient({ item }: NavLinkDetailProps) {
             )}
           </div>
           <div className="p-4 lg:p-6 lg:pt-4">
-            {/* 标题与分类 */}
             <div className="flex items-start gap-3">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-app-card-hover">
                 {item.icon?.startsWith("ri-") ? (
@@ -105,7 +105,6 @@ export default function NavLinkDetailClient({ item }: NavLinkDetailProps) {
               </div>
             </div>
 
-            {/* 核心标语 */}
             {item.slogan && (
               <div className="mt-3 flex items-center gap-2 rounded-xl bg-app-card-hover px-3 py-2.5">
                 <i className="ri-flashlight-fill text-base text-[#f59e0b]" />
@@ -113,7 +112,6 @@ export default function NavLinkDetailClient({ item }: NavLinkDetailProps) {
               </div>
             )}
 
-            {/* 访问按钮（移动端显示在此） */}
             <div className="mt-4 flex flex-col gap-2 lg:hidden">
               <button
                 type="button"
@@ -121,7 +119,7 @@ export default function NavLinkDetailClient({ item }: NavLinkDetailProps) {
                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-app-accent px-4 py-3 text-sm font-medium text-white transition hover:opacity-90"
               >
                 <i className="ri-external-link-line text-lg" />
-                访问网站
+                {t("visitSite")}
               </button>
               <a
                 href={item.url}
@@ -135,10 +133,8 @@ export default function NavLinkDetailClient({ item }: NavLinkDetailProps) {
           </div>
         </div>
 
-        {/* 右侧：详细描述（主内容区，占满剩余空间） */}
         <div className="flex flex-1 flex-col border-t border-app-border lg:border-l lg:border-t-0">
           <div className="flex flex-1 flex-col p-6 sm:p-8">
-            {/* 访问按钮（宽屏时显示在顶部） */}
             <div className="mb-6 hidden flex-wrap items-center gap-3 lg:flex">
               <button
                 type="button"
@@ -146,7 +142,7 @@ export default function NavLinkDetailClient({ item }: NavLinkDetailProps) {
                 className="inline-flex items-center gap-2 rounded-xl bg-app-accent px-6 py-3 text-sm font-medium text-white transition hover:opacity-90"
               >
                 <i className="ri-external-link-line text-lg" />
-                访问网站
+                {t("visitSite")}
               </button>
               <a
                 href={item.url}
@@ -158,13 +154,12 @@ export default function NavLinkDetailClient({ item }: NavLinkDetailProps) {
               </a>
             </div>
 
-            {/* 详细描述 - Markdown */}
             {item.description ? (
               <div className="prose prose-sm max-w-none prose-headings:text-app-text prose-p:text-app-text-muted prose-a:text-app-accent prose-li:text-app-text-muted prose-code:bg-app-card-hover prose-code:rounded prose-code:px-1 prose-code:py-0.5 prose-pre:bg-app-card-hover">
                 <ReactMarkdown>{item.description}</ReactMarkdown>
               </div>
             ) : (
-              <p className="text-app-text-muted">暂无详细介绍</p>
+              <p className="text-app-text-muted">{t("noDescription")}</p>
             )}
           </div>
         </div>

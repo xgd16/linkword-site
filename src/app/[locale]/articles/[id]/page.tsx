@@ -1,29 +1,34 @@
 import { notFound } from "next/navigation"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getPublishedArticleDetail } from "@/lib/api"
-import { getFullUrl, resolveImageUrl, truncateForMeta } from "@/lib/site"
+import { resolveImageUrl, truncateForMeta } from "@/lib/site"
+import { fullLocalizedUrl } from "@/lib/locale-url"
 import ArticleDetailClient from "./ArticleDetail"
 import type { Metadata } from "next"
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ locale: string; id: string }>
 }): Promise<Metadata> {
-  const { id } = await params
-  const article = await getPublishedArticleDetail({ id: parseInt(id, 10) })
+  const { locale, id } = await params
+  const t = await getTranslations({ locale, namespace: "Metadata" })
+  const article = await getPublishedArticleDetail({ id: parseInt(id, 10), locale })
   if (!article) {
-    return { title: "文章详情" }
+    return { title: t("articleFallbackTitle") }
   }
 
-  const pageUrl = getFullUrl(`/articles/${id}`)
+  const pageUrl = fullLocalizedUrl(locale, `/articles/${id}`)
   const desc = truncateForMeta(article.summary)
   const ogImage = resolveImageUrl(article.cover)
+  const ogLocale = locale === "zh" ? "zh_CN" : "en_US"
 
   return {
     title: article.title,
     description: desc || truncateForMeta(article.content, 155),
     openGraph: {
       type: "article",
+      locale: ogLocale,
       url: pageUrl,
       title: article.title,
       description: desc || article.summary,
@@ -40,6 +45,10 @@ export async function generateMetadata({
     },
     alternates: {
       canonical: pageUrl,
+      languages: {
+        zh: fullLocalizedUrl("zh", `/articles/${id}`),
+        en: fullLocalizedUrl("en", `/articles/${id}`),
+      },
     },
     keywords: [article.title, ...(article.tagNames || [])].filter(Boolean),
   }
@@ -48,22 +57,24 @@ export async function generateMetadata({
 export default async function ArticleDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ locale: string; id: string }>
 }) {
-  const { id } = await params
+  const { locale, id } = await params
+  setRequestLocale(locale)
+
   const numId = parseInt(id, 10)
   if (isNaN(numId)) notFound()
 
   let article: Awaited<ReturnType<typeof getPublishedArticleDetail>>
   try {
-    article = await getPublishedArticleDetail({ id: numId })
+    article = await getPublishedArticleDetail({ id: numId, locale })
   } catch {
     article = null
   }
 
   if (!article) notFound()
 
-  const pageUrl = getFullUrl(`/articles/${article.id}`)
+  const pageUrl = fullLocalizedUrl(locale, `/articles/${article.id}`)
   const ogImage = resolveImageUrl(article.cover)
 
   const jsonLd = {

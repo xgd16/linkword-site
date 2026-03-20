@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 import { motion, AnimatePresence } from "motion/react"
 import type { BannerItem } from "@/lib/api"
 import { getBannerList } from "@/lib/api"
@@ -15,9 +16,11 @@ function resolveImage(img: string): string {
 }
 
 export default function BannerCarousel() {
+  const t = useTranslations("Banner")
   const [items, setItems] = useState<BannerItem[]>([])
   const [index, setIndex] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
 
   useEffect(() => {
     getBannerList()
@@ -30,7 +33,7 @@ export default function BannerCarousel() {
   }, [])
 
   const goTo = useCallback((i: number) => {
-    setIndex((prev) => {
+    setIndex(() => {
       if (i < 0) return items.length - 1
       if (i >= items.length) return 0
       return i
@@ -38,10 +41,28 @@ export default function BannerCarousel() {
   }, [items.length])
 
   useEffect(() => {
-    if (items.length <= 1) return
-    const t = setInterval(() => goTo(index + 1), 5000)
-    return () => clearInterval(t)
-  }, [index, items.length, goTo])
+    if (items.length <= 1 || lightboxOpen) return
+    const timer = setInterval(() => goTo(index + 1), 5000)
+    return () => clearInterval(timer)
+  }, [index, items.length, goTo, lightboxOpen])
+
+  useEffect(() => {
+    if (!lightboxOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxOpen(false)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [lightboxOpen])
+
+  useEffect(() => {
+    if (!lightboxOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [lightboxOpen])
 
   const placeholderOrLoading = (
     <div className="flex h-full flex-col justify-end overflow-hidden rounded-2xl border border-app-border bg-gradient-to-br from-app-gradient-from/80 to-app-gradient-to/80 animate-pulse">
@@ -58,7 +79,7 @@ export default function BannerCarousel() {
         </>
       ) : (
         <div className="flex h-full items-center justify-center">
-          <span className="text-app-text-muted">暂无轮播图</span>
+          <span className="text-app-text-muted">{t("empty")}</span>
         </div>
       )}
     </div>
@@ -83,14 +104,14 @@ export default function BannerCarousel() {
             transition={{ duration: 0.3 }}
             className="absolute inset-0"
           >
-            {current.url ? (
-              <a
-                href={current.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative block h-full w-full"
-              >
-                {imgUrl ? (
+            <div className="relative h-full w-full">
+              {imgUrl ? (
+                <button
+                  type="button"
+                  onClick={() => setLightboxOpen(true)}
+                  aria-label={t("enlarge")}
+                  className="relative block h-full w-full cursor-zoom-in text-left outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 focus-visible:ring-offset-app-card"
+                >
                   <Image
                     src={imgUrl}
                     alt={current.title || ""}
@@ -99,41 +120,35 @@ export default function BannerCarousel() {
                     sizes="100vw"
                     className="object-cover"
                   />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-app-gradient-from">
-                    <i className="ri-image-line text-5xl text-app-accent/40" />
-                  </div>
-                )}
-              </a>
-            ) : (
-              <>
-                {imgUrl ? (
-                  <Image
-                    src={imgUrl}
-                    alt={current.title || ""}
-                    fill
-                    unoptimized
-                    sizes="100vw"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-app-gradient-from">
-                    <i className="ri-image-line text-5xl text-app-accent/40" />
-                  </div>
-                )}
-              </>
-            )}
+                </button>
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-app-gradient-from">
+                  <i className="ri-image-line text-5xl text-app-accent/40" />
+                </div>
+              )}
+              {current.url ? (
+                <a
+                  href={current.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute bottom-14 right-3 z-10 flex items-center gap-1 rounded-full bg-black/45 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm transition hover:bg-black/60"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <i className="ri-external-link-line text-sm" aria-hidden />
+                  {t("openLink")}
+                </a>
+              ) : null}
+            </div>
           </motion.div>
         </AnimatePresence>
 
-        {/* 指示器 */}
         {items.length > 1 && (
           <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
             {items.map((_, i) => (
               <button
                 key={i}
                 type="button"
-                aria-label={`第 ${i + 1} 张`}
+                aria-label={t("slideN", { n: i + 1 })}
                 onClick={() => setIndex(i)}
                 className={`h-2 rounded-full transition-all ${
                   i === index ? "w-6 bg-app-accent" : "w-2 bg-white/50 hover:bg-white/70"
@@ -143,12 +158,11 @@ export default function BannerCarousel() {
           </div>
         )}
 
-        {/* 左右箭头 */}
         {items.length > 1 && (
           <>
             <button
               type="button"
-              aria-label="上一张"
+              aria-label={t("prev")}
               onClick={() => goTo(index - 1)}
               className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white transition hover:bg-black/50"
             >
@@ -156,7 +170,7 @@ export default function BannerCarousel() {
             </button>
             <button
               type="button"
-              aria-label="下一张"
+              aria-label={t("next")}
               onClick={() => goTo(index + 1)}
               className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white transition hover:bg-black/50"
             >
@@ -165,6 +179,47 @@ export default function BannerCarousel() {
           </>
         )}
       </div>
+
+      {lightboxOpen && imgUrl ? (
+        <div
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/88 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label={t("enlarge")}
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            type="button"
+            aria-label={t("closeLightbox")}
+            className="absolute right-4 top-4 z-102 rounded-full bg-white/10 p-2.5 text-white transition hover:bg-white/20"
+            onClick={(e) => {
+              e.stopPropagation()
+              setLightboxOpen(false)
+            }}
+          >
+            <i className="ri-close-line text-2xl" aria-hidden />
+          </button>
+          {/* eslint-disable-next-line @next/next/no-img-element -- 全屏预览用原生 img，避免与 fill 布局耦合 */}
+          <img
+            src={imgUrl}
+            alt={current.title || ""}
+            className="max-h-[min(90vh,100%)] max-w-full object-contain shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+          {current.url ? (
+            <a
+              href={current.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute bottom-6 left-1/2 z-102 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/15 px-5 py-2.5 text-sm font-medium text-white backdrop-blur-md transition hover:bg-white/25"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <i className="ri-external-link-line" aria-hidden />
+              {t("openLink")}
+            </a>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   )
 }

@@ -1,7 +1,8 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import { motion } from "motion/react"
 import type { ArticleItem } from "@/lib/api"
 import { staggerContainer, staggerItem } from "@/lib/motion"
@@ -21,6 +22,7 @@ interface FeaturedBannerProps {
 }
 
 export default function FeaturedBanner({ articles }: FeaturedBannerProps) {
+  const t = useTranslations("LatestReleases")
   const secondary = articles.slice(0, 3)
 
   return (
@@ -30,7 +32,6 @@ export default function FeaturedBanner({ articles }: FeaturedBannerProps) {
       animate="show"
       className="space-y-8"
     >
-      {/* 主推区域：轮播图 + 点击排行榜，2:1 比例，等高对齐 */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <motion.div variants={staggerItem} className="h-[260px] lg:col-span-2 lg:h-[300px]">
           <BannerCarousel />
@@ -40,7 +41,6 @@ export default function FeaturedBanner({ articles }: FeaturedBannerProps) {
         </motion.div>
       </div>
 
-      {/* 次推文章：横排三张 */}
       {secondary.length > 0 && (
         <motion.div
           variants={staggerItem}
@@ -74,7 +74,7 @@ export default function FeaturedBanner({ articles }: FeaturedBannerProps) {
                   {article.title}
                 </h4>
                 <p className="mt-0.5 line-clamp-2 text-xs text-app-text-muted">
-                  {article.summary || "暂无摘要"}
+                  {article.summary || t("noSummary")}
                 </p>
               </div>
             </Link>

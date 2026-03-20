@@ -1,7 +1,7 @@
 "use client"
 
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useLocale, useTranslations } from "next-intl"
+import { Link, useRouter } from "@/i18n/navigation"
 import { useCallback, useEffect, useRef, useState, useTransition } from "react"
 import { motion } from "motion/react"
 import type { NavCategoryBrief, NavLinkWithCategory } from "@/lib/api"
@@ -37,12 +37,13 @@ export default function NavContent({
   keyword,
   categoryId,
 }: NavContentProps) {
-  const [links, setLinks] = useState<NavLinkWithCategory[]>(initialLinks)
+  const t = useTranslations("NavContent")
+  const locale = useLocale()
+  const [links, setLinks] = useState(initialLinks)
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(initialLinks.length < total)
   const [showBackTop, setShowBackTop] = useState(false)
-  // 乐观选中：点击时立即更新，不等服务端数据返回
   const [activeCategoryId, setActiveCategoryId] = useState(categoryId)
   const sentinelRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -55,7 +56,7 @@ export default function NavContent({
   useEffect(() => {
     const onScroll = () => setShowBackTop(window.scrollY > 300)
     window.addEventListener("scroll", onScroll)
-    onScroll() // 初始化
+    onScroll()
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
@@ -67,19 +68,17 @@ export default function NavContent({
     (href: string, targetCat?: string) => (e: React.MouseEvent) => {
       if (targetCat !== undefined && targetCat === categoryId) return
       e.preventDefault()
-      // 立即更新选中效果，不等待导航完成
       setActiveCategoryId(targetCat ?? "")
       startTransition(() => router.push(href))
     },
     [router, categoryId]
   )
 
-  // 当筛选条件变化时，服务端会传入新的 initialLinks，需要重置
   useEffect(() => {
     setLinks(initialLinks)
     setPage(1)
     setHasMore(initialLinks.length < total)
-  }, [keyword, categoryId])
+  }, [keyword, categoryId, initialLinks, total])
 
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return
@@ -90,6 +89,7 @@ export default function NavContent({
         pageSize,
         categoryId: categoryId && categoryId !== "all" ? parseInt(categoryId, 10) : undefined,
         keyword: keyword || undefined,
+        locale,
       })
       if (res.list.length > 0) {
         setLinks((prev) => [...prev, ...res.list])
@@ -101,7 +101,7 @@ export default function NavContent({
     } finally {
       setLoading(false)
     }
-  }, [loading, hasMore, page, pageSize, categoryId, keyword, links.length])
+  }, [loading, hasMore, page, pageSize, categoryId, keyword, links.length, total, locale])
 
   useEffect(() => {
     const el = sentinelRef.current
@@ -124,7 +124,7 @@ export default function NavContent({
         transition={spring}
         className="rounded-xl border border-dashed border-app-border py-16 text-center text-app-text-muted"
       >
-        暂无匹配的导航
+        {t("noMatch")}
       </motion.div>
     )
   }
@@ -136,7 +136,6 @@ export default function NavContent({
       animate="show"
       className="relative space-y-8"
     >
-      {/* 右侧固定：轻量进度条 + 返回顶部 */}
       <div className="pointer-events-none fixed bottom-6 right-6 z-20 hidden flex-col items-end gap-2 sm:flex">
         <motion.div
           initial={{ opacity: 0, x: 16 }}
@@ -148,7 +147,7 @@ export default function NavContent({
           </div>
           <div className="leading-tight">
             <div className="text-[10px] uppercase tracking-[0.18em] text-app-text-muted">
-              进度
+              {t("progress")}
             </div>
             <div className="mt-1 flex items-baseline gap-1">
               <span className="text-base font-semibold text-app-text">{links.length}</span>
@@ -161,14 +160,13 @@ export default function NavContent({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             onClick={scrollToTop}
-            aria-label="返回顶部"
+            aria-label={t("backToTopAria")}
             className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full border border-app-border/80 bg-app-card/80 text-app-text-muted shadow-[0_10px_24px_rgba(0,0,0,0.16)] backdrop-blur-xl transition hover:bg-app-card-hover hover:text-app-text"
           >
             <i className="ri-arrow-up-line text-lg" />
           </motion.button>
         )}
       </div>
-      {/* 分类筛选 */}
       {categories.length > 0 && (
         <motion.div variants={staggerItem} className="flex flex-wrap gap-2">
           <Link
@@ -181,7 +179,7 @@ export default function NavContent({
                 : "border-app-border text-app-text-muted hover:border-app-border hover:bg-app-card-hover hover:text-app-text"
             }`}
           >
-            全部
+            {t("allCategories")}
           </Link>
           {categories.map((cat) => (
             <Link
@@ -209,7 +207,6 @@ export default function NavContent({
         </motion.div>
       )}
 
-      {/* 链接网格 - 切换分类时显示骨架 */}
       {isPending ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: pageSize }).map((_, i) => (
@@ -241,9 +238,7 @@ export default function NavContent({
         </motion.div>
       )}
 
-      {/* 底部：加载骨架 + 触发点 */}
       <motion.div variants={staggerItem} className="flex flex-col items-center gap-4 py-6">
-        {/* 加载骨架 */}
         {(loading || isPending) && (
           <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: Math.min(4, pageSize) }).map((_, i) => (
@@ -252,7 +247,6 @@ export default function NavContent({
           </div>
         )}
 
-        {/* 滚动触发点 */}
         {hasMore && !loading && !isPending && <div ref={sentinelRef} className="h-1 w-full" />}
       </motion.div>
     </motion.div>

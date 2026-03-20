@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/navigation"
 import ReactMarkdown from "react-markdown"
 import { motion } from "motion/react"
 import type { NavTreeLink } from "@/lib/api"
@@ -39,6 +40,7 @@ interface NavLinkCardProps {
 }
 
 export default function NavLinkCard({ link, categoryName }: NavLinkCardProps) {
+  const t = useTranslations("NavLinkCard")
   const domain = getDomain(link.url)
   const { primary: iconSrc, fallback: faviconUrl } = getIconSrc(link.icon ?? "", domain)
   const [iconError, setIconError] = useState<Record<string, boolean>>({})
@@ -175,10 +177,10 @@ export default function NavLinkCard({ link, categoryName }: NavLinkCardProps) {
         <div className="mt-3 flex items-center justify-between border-t border-app-border/60 pt-3">
           <span className="flex items-center gap-1.5 text-xs text-app-text-muted">
             <i className={isDirect ? "ri-external-link-line" : "ri-file-text-line"} />
-            {isDirect ? "直达链接" : "详细介绍"}
+            {isDirect ? t("directLink") : t("detailIntro")}
           </span>
           <span className="text-xs text-app-accent transition-colors group-hover:text-app-accent-secondary">
-            {isDirect ? "访问 →" : "查看详情 →"}
+            {isDirect ? t("visit") : t("viewDetail")}
           </span>
         </div>
       </div>

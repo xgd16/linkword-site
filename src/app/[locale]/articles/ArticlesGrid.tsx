@@ -17,7 +17,7 @@ export default function ArticlesGrid({ list }: ArticlesGridProps) {
       animate="show"
       className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
     >
-      {list.map((item, i) => (
+      {list.map((item) => (
         <motion.div key={item.id} variants={staggerItem}>
           <ArticleCard item={item} />
         </motion.div>
