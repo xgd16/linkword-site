@@ -102,7 +102,7 @@ export default async function LocaleLayout({
               <BackgroundEffects />
               <Sidebar>
                 <Suspense fallback={<SidebarHotChannelsSkeleton />}>
-                  <SidebarHotChannels />
+                  <SidebarHotChannels locale={locale} />
                 </Suspense>
               </Sidebar>
               <Suspense

@@ -1,12 +1,11 @@
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
-import { getLocale } from "next-intl/server"
 import { getNavCategoriesHot } from "@/lib/api"
+import type { Locale } from "@/i18n/routing"
 
 /** 热门频道（服务端异步），供 layout 用 Suspense 包裹 */
-export default async function SidebarHotChannels() {
+export default async function SidebarHotChannels({ locale }: { locale: Locale }) {
   const t = await getTranslations("SidebarHot")
-  const locale = await getLocale()
   const list = await getNavCategoriesHot(5, locale)
   if (list.length === 0) return null
   return (

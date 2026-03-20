@@ -1,7 +1,8 @@
 import createMiddleware from "next-intl/middleware"
 import { routing } from "./i18n/routing"
 
-export default createMiddleware(routing)
+/** Next.js 16+ 使用 proxy 约定（原 middleware），行为与 i18n 路由一致 */
+export const proxy = createMiddleware(routing)
 
 export const config = {
   matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],

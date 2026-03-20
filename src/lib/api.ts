@@ -51,7 +51,9 @@ interface ApiResponse<T> {
 async function request<T>(url: string, init?: RequestInit): Promise<ApiResponse<T>> {
   const base = getApiBase()
   const path = url.startsWith("/") ? url : `/${url}`
+  // 服务端默认不缓存，避免与 locale 相关的接口在 SSG/导航后被 Next 数据缓存串单
   const res = await fetch(`${base}${path}`, {
+    ...(typeof window === "undefined" && init?.cache === undefined ? { cache: "no-store" as const } : {}),
     ...init,
     headers: { "Content-Type": "application/json", ...init?.headers },
   })
