@@ -106,21 +106,39 @@ export default function BannerCarousel() {
           >
             <div className="relative h-full w-full">
               {imgUrl ? (
-                <button
-                  type="button"
-                  onClick={() => setLightboxOpen(true)}
-                  aria-label={t("enlarge")}
-                  className="relative block h-full w-full cursor-zoom-in text-left outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 focus-visible:ring-offset-app-card"
-                >
-                  <Image
-                    src={imgUrl}
-                    alt={current.title || ""}
-                    fill
-                    unoptimized
-                    sizes="100vw"
-                    className="object-cover"
-                  />
-                </button>
+                <>
+                  <div
+                    className="pointer-events-none absolute inset-0 overflow-hidden"
+                    aria-hidden
+                  >
+                    <div className="absolute -inset-10">
+                      <Image
+                        src={imgUrl}
+                        alt=""
+                        fill
+                        unoptimized
+                        sizes="100vw"
+                        className="scale-110 object-cover object-center blur-2xl saturate-125"
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-app-card/40 backdrop-blur-xl ring-1 ring-inset ring-black/4 dark:ring-white/6" />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setLightboxOpen(true)}
+                    aria-label={t("enlarge")}
+                    className="relative z-1 block h-full w-full cursor-zoom-in text-left outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 focus-visible:ring-offset-app-card"
+                  >
+                    <Image
+                      src={imgUrl}
+                      alt={current.title || ""}
+                      fill
+                      unoptimized
+                      sizes="100vw"
+                      className="object-contain object-center drop-shadow-sm"
+                    />
+                  </button>
+                </>
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-app-gradient-from">
                   <i className="ri-image-line text-5xl text-app-accent/40" />
