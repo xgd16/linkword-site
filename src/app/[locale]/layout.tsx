@@ -15,6 +15,7 @@ import { SettingsProvider } from "@/components/SettingsProvider"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 import { routing } from "@/i18n/routing"
 import { fullLocalizedUrl } from "@/lib/locale-url"
+import SiteVisitReporter from "@/components/SiteVisitReporter"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -99,6 +100,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             <SettingsProvider>
+              <SiteVisitReporter locale={locale} />
               <BackgroundEffects />
               <Sidebar>
                 <Suspense fallback={<SidebarHotChannelsSkeleton />}>

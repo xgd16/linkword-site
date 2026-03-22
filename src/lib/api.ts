@@ -105,6 +105,28 @@ export async function getNavCategoriesHot(limit = 5, locale?: string): Promise<N
   return list.map((c) => ({ id: c.id, name: c.name, icon: c.icon }))
 }
 
+/** 上报站点页面访问（浏览器 → 源站 API，适用于 CDN 托管的静态资源） */
+export async function reportSiteVisit(params: {
+  visitorId: string
+  path: string
+  locale: string
+}): Promise<void> {
+  try {
+    await fetch(`${(process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")}/site/visit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        visitorId: params.visitorId,
+        path: params.path,
+        locale: params.locale === "en" ? "en" : "zh",
+      }),
+      keepalive: true,
+    })
+  } catch {
+    // 静默失败
+  }
+}
+
 /** 上报链接点击 */
 export async function reportNavLinkClick(linkId: number): Promise<void> {
   try {
