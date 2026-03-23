@@ -16,8 +16,9 @@ export default function Header() {
   const searchParams = useSearchParams()
   const urlKeyword = searchParams.get("keyword") ?? ""
   const cat = searchParams.get("cat") ?? ""
-  const ai = searchParams.get("ai") === "1"
+  const urlAi = searchParams.get("ai") === "1"
   const [keyword, setKeyword] = useState(urlKeyword)
+  const [aiEnabled, setAiEnabled] = useState(urlAi)
   const isNavPage = pathname === "/nav"
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -25,7 +26,11 @@ export default function Header() {
     setKeyword(urlKeyword)
   }, [urlKeyword])
 
-  const getNavUrl = (kw: string, useAi = ai) => {
+  useEffect(() => {
+    setAiEnabled(urlAi)
+  }, [urlAi])
+
+  const getNavUrl = (kw: string, useAi = aiEnabled) => {
     const params = new URLSearchParams()
     const n = normalizeSearchKeyword(kw)
     if (n) params.set("keyword", n)
@@ -35,28 +40,40 @@ export default function Header() {
     return q ? `/nav?${q}` : "/nav"
   }
 
+  const navigateToNav = (url: string, replace = false) => {
+    if (typeof window !== "undefined") {
+      if (replace) {
+        window.location.replace(url)
+      } else {
+        window.location.assign(url)
+      }
+      return
+    }
+    if (replace) {
+      router.replace(url)
+    } else {
+      router.push(url)
+    }
+  }
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     const targetUrl = getNavUrl(keyword)
-    const currentQuery = searchParams.toString()
-    const currentUrl = currentQuery ? `${pathname}?${currentQuery}` : pathname
-    if (targetUrl === currentUrl) {
-      router.refresh()
-      return
-    }
-    router.push(targetUrl)
+    navigateToNav(targetUrl)
   }
 
   const handleClearSearch = () => {
     setKeyword("")
     if (isNavPage) {
-      router.push(getNavUrl(""))
+      navigateToNav(getNavUrl(""), true)
     }
     inputRef.current?.focus()
   }
 
   const handleAiToggle = () => {
-    router.push(getNavUrl(keyword, !ai))
+    const nextAi = !aiEnabled
+    setAiEnabled(nextAi)
+    navigateToNav(getNavUrl(keyword, nextAi))
   }
 
   return (
@@ -113,17 +130,19 @@ export default function Header() {
           <button
             type="button"
             onClick={handleAiToggle}
-            aria-pressed={ai}
+            aria-pressed={aiEnabled}
             aria-label={t("aiSearchToggleAria")}
             className={`inline-flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition ${
-              ai
+              aiEnabled
                 ? "border-app-accent bg-app-accent/12 text-app-accent"
                 : "border-app-border bg-app-card-hover text-app-text-muted hover:text-app-text"
             }`}
           >
             <span
               className={`h-2.5 w-2.5 rounded-full ${
-                ai ? "bg-app-accent shadow-[0_0_12px_rgba(79,70,229,0.55)]" : "bg-app-text-muted/40"
+                aiEnabled
+                  ? "bg-app-accent shadow-[0_0_12px_rgba(79,70,229,0.55)]"
+                  : "bg-app-text-muted/40"
               }`}
             />
             <span className="hidden sm:inline">{t("aiSearch")}</span>
