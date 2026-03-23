@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NODE_OPTIONS='--max-old-space-size=768' next build",
+    "build:debug-memory": "NODE_OPTIONS='--max-old-space-size=768' next build --experimental-debug-memory-usage",
     "start": "next start",
-    "release": "next build && next start",
+    "release": "NODE_OPTIONS='--max-old-space-size=768' next build && next start",
     "lint": "eslint"
   },
   "dependencies": {
