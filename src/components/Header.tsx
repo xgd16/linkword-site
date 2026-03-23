@@ -3,15 +3,16 @@
 import { useState, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { Link, useRouter, usePathname } from "@/i18n/navigation"
+import { Link, usePathname } from "@/i18n/navigation"
 import { motion } from "motion/react"
 import ThemeSelector from "./ThemeSelector"
 import LanguageSwitcher from "./LanguageSwitcher"
 import { normalizeSearchKeyword } from "@/lib/searchKeyword"
+import { useSearchTransition } from "./SearchTransitionProvider"
 
 export default function Header() {
   const t = useTranslations("Header")
-  const router = useRouter()
+  const { navigateToNav } = useSearchTransition()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const urlKeyword = searchParams.get("keyword") ?? ""
@@ -38,14 +39,6 @@ export default function Header() {
     if (useAi) params.set("ai", "1")
     const q = params.toString()
     return q ? `/nav?${q}` : "/nav"
-  }
-
-  const navigateToNav = (url: string, replace = false) => {
-    if (replace) {
-      router.replace(url)
-    } else {
-      router.push(url)
-    }
   }
 
   const handleSearch = (e: React.FormEvent) => {
@@ -89,7 +82,7 @@ export default function Header() {
                   const v = e.target.value
                   setKeyword(v)
                   if (isNavPage && !normalizeSearchKeyword(v)) {
-                    router.push(getNavUrl(v))
+                    navigateToNav(getNavUrl(v))
                   }
                 }}
                 placeholder={aiEnabled ? t("searchPlaceholderAi") : t("searchPlaceholder")}

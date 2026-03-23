@@ -100,7 +100,8 @@
     "noMatch": "No matching links",
     "progress": "Progress",
     "backToTopAria": "Back to top",
-    "allCategories": "All"
+    "allCategories": "All",
+    "aiProcessing": "AI is processing your search..."
   },
   "NavPage": {
     "loading": "Loading..."

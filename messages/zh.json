@@ -100,7 +100,8 @@
     "noMatch": "暂无匹配的导航",
     "progress": "进度",
     "backToTopAria": "返回顶部",
-    "allCategories": "全部"
+    "allCategories": "全部",
+    "aiProcessing": "AI 正在处理您的搜索..."
   },
   "NavPage": {
     "loading": "加载中..."
