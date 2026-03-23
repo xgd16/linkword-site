@@ -3,14 +3,14 @@
     "backHome": "Back to home"
   },
   "Metadata": {
-    "siteTitle": "LinkWord - Curated links & articles",
-    "siteDescription": "A curated directory of useful sites and tools, plus articles.",
-    "siteKeywords": "directory, links, tools, navigation, articles, resources",
-    "articlesTitle": "Articles",
-    "articlesDescription": "Latest articles and curated reads.",
+    "siteTitle": "LinkWord - AI directory, tech news, website recommendations and articles",
+    "siteDescription": "LinkWord brings together an AI directory, website recommendations, tech news, and curated articles so readers can quickly discover useful sites, tools, trends, and in-depth content.",
+    "siteKeywords": "AI directory, AI tools, website directory, website recommendations, tech news, AI news, curated articles, resource hub, tool recommendations, LinkWord",
+    "articlesTitle": "AI articles and tech news",
+    "articlesDescription": "Curated AI articles, tech news, product insights, and practical tutorials worth reading.",
     "articlesOgTitle": "Articles - LinkWord",
-    "navTitle": "Directory",
-    "navDescription": "Hand-picked websites and tools.",
+    "navTitle": "AI directory and website recommendations",
+    "navDescription": "Discover hand-picked AI websites, useful tools, and quality resources in one directory.",
     "navOgTitle": "Directory - LinkWord",
     "settingsTitle": "Settings",
     "settingsDescription": "Site preferences",
@@ -37,12 +37,28 @@
     "en": "English"
   },
   "Hero": {
-    "subtitle": "Curated links · Tools & articles",
-    "navCta": "Directory",
-    "articlesCta": "Articles"
+    "eyebrow": "LinkWord · AI directory and content discovery",
+    "title": "AI directory, tech news, website recommendations, and curated articles",
+    "subtitle": "Find useful websites, AI tools, industry updates, and high-quality reads faster.",
+    "description": "Built around AI, technology, and productivity tools, LinkWord organizes directory links, recommendations, news updates, and in-depth articles.",
+    "navCta": "AI directory",
+    "articlesCta": "Tech articles",
+    "keyword1": "AI directory",
+    "keyword2": "Tech news",
+    "keyword3": "Website picks",
+    "keyword4": "Curated articles",
+    "keyword5": "Useful tools"
   },
   "Home": {
-    "ogUrlPath": "/"
+    "ogUrlPath": "/",
+    "seoTitle": "A single entry point for AI directories, tech news, website recommendations, and curated articles",
+    "seoDescription": "The homepage helps readers discover AI tools, follow tech trends, browse useful websites, and read selected articles from one place.",
+    "seoCard1Title": "AI directory",
+    "seoCard1Desc": "Explore AI tools, products, and website entries in one place.",
+    "seoCard2Title": "Tech news",
+    "seoCard2Desc": "Stay on top of AI, internet, and product trends with fresh updates.",
+    "seoCard3Title": "Website recommendations",
+    "seoCard3Desc": "Find useful sites, quality resources, and high-value links worth saving."
   },
   "LatestReleases": {
     "title": "Latest",

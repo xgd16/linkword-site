@@ -12,28 +12,51 @@ export default function HeroSection() {
     { href: "/nav" as const, labelKey: "navCta" as const, icon: "ri-links-line" },
     { href: "/articles" as const, labelKey: "articlesCta" as const, icon: "ri-article-line" },
   ]
+  const keywords = ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"] as const
 
   return (
     <motion.section
       variants={staggerContainer(0, 0.06)}
       initial="hidden"
       animate="show"
-      className="relative overflow-hidden rounded-2xl border border-app-border bg-gradient-to-br from-app-gradient-from via-app-card to-app-gradient-to px-6 py-10 sm:px-8 sm:py-12 md:px-10 md:py-14"
+      className="relative overflow-hidden rounded-2xl border border-app-border bg-linear-to-br from-app-gradient-from via-app-card to-app-gradient-to px-6 py-10 sm:px-8 sm:py-12 md:px-10 md:py-14"
     >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,var(--app-accent-muted)_0%,transparent_60%)] opacity-60" />
       <div className="relative">
+        <motion.p
+          variants={staggerItem}
+          className="text-sm font-medium tracking-[0.18em] text-app-accent uppercase"
+        >
+          {t("eyebrow")}
+        </motion.p>
         <motion.h1
           variants={staggerItem}
-          className="text-2xl font-semibold tracking-tight text-app-text sm:text-3xl md:text-4xl"
+          className="mt-3 text-3xl font-semibold tracking-tight text-app-text sm:text-4xl md:text-5xl"
         >
-          {SITE_NAME}
+          {t("title")}
         </motion.h1>
         <motion.p
           variants={staggerItem}
-          className="mt-2 text-base text-app-text-muted sm:text-lg"
+          className="mt-3 text-base font-medium text-app-text sm:text-lg"
         >
           {t("subtitle")}
         </motion.p>
+        <motion.p
+          variants={staggerItem}
+          className="mt-3 max-w-3xl text-sm leading-7 text-app-text-muted sm:text-base"
+        >
+          {t("description")}
+        </motion.p>
+        <motion.div variants={staggerItem} className="mt-5 flex flex-wrap gap-2">
+          {keywords.map((key) => (
+            <span
+              key={key}
+              className="rounded-full border border-app-border bg-app-card/80 px-3 py-1 text-xs font-medium text-app-text-muted backdrop-blur-sm"
+            >
+              {t(key)}
+            </span>
+          ))}
+        </motion.div>
         <motion.div
           variants={staggerItem}
           className="mt-6 flex flex-wrap gap-3"
@@ -50,6 +73,9 @@ export default function HeroSection() {
             </span>
           ))}
         </motion.div>
+        <motion.p variants={staggerItem} className="mt-6 text-xs text-app-text-muted/90 sm:text-sm">
+          {SITE_NAME}
+        </motion.p>
       </div>
     </motion.section>
   )

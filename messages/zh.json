@@ -3,14 +3,14 @@
     "backHome": "返回首页"
   },
   "Metadata": {
-    "siteTitle": "LinkWord - 网站导航与文章",
-    "siteDescription": "网站导航 + 文章系统，精选资源与资讯",
-    "siteKeywords": "网站导航, 精选链接, 工具导航, 文章, 资讯",
-    "articlesTitle": "文章列表",
-    "articlesDescription": "最新文章与资讯，精选内容推荐",
+    "siteTitle": "LinkWord - AI导航、科技新闻、网站推荐与精选文章",
+    "siteDescription": "LinkWord 聚合 AI 导航、网站推荐、科技新闻与精选文章，帮助你高效发现值得收藏的网站、工具、行业动态与深度内容。",
+    "siteKeywords": "AI导航, AI工具导航, 网站导航, 网站推荐, 科技新闻, AI新闻, 精选文章, 资源导航, 工具推荐, LinkWord",
+    "articlesTitle": "AI文章与科技新闻",
+    "articlesDescription": "聚合 AI 文章、科技新闻、产品观察与实用教程，持续更新值得阅读的精选内容。",
     "articlesOgTitle": "文章列表 - LinkWord",
-    "navTitle": "网站导航",
-    "navDescription": "精选网站与工具导航，发现优质工具与资源",
+    "navTitle": "AI导航与网站推荐",
+    "navDescription": "收录优质 AI 网站、实用工具与精选资源，提供清晰的网站导航与网站推荐。",
     "navOgTitle": "网站导航 - LinkWord",
     "settingsTitle": "设置",
     "settingsDescription": "个人偏好设置",
@@ -37,12 +37,28 @@
     "en": "English"
   },
   "Hero": {
-    "subtitle": "精选网站导航 · 实用工具与文章",
-    "navCta": "网站导航",
-    "articlesCta": "文章中心"
+    "eyebrow": "LinkWord · AI导航与内容发现",
+    "title": "AI导航、科技新闻、网站推荐与精选文章平台",
+    "subtitle": "帮助你快速发现值得收藏的网站、AI 工具、行业资讯与高质量文章。",
+    "description": "围绕 AI、科技与效率工具，持续整理网站导航、内容推荐、新闻动态和深度解读。",
+    "navCta": "AI导航",
+    "articlesCta": "科技文章",
+    "keyword1": "AI导航",
+    "keyword2": "科技新闻",
+    "keyword3": "网站推荐",
+    "keyword4": "精选文章",
+    "keyword5": "实用工具"
   },
   "Home": {
-    "ogUrlPath": "/"
+    "ogUrlPath": "/",
+    "seoTitle": "一个同时覆盖 AI导航、科技新闻、网站推荐 与精选文章的内容入口",
+    "seoDescription": "首页围绕 AI 工具、科技趋势、优质网站与深度文章进行整理，适合快速查找站点入口、获取行业动态并发现值得收藏的资源。",
+    "seoCard1Title": "AI导航",
+    "seoCard1Desc": "集中发现 AI 工具、产品和站点入口，提高检索效率。",
+    "seoCard2Title": "科技新闻",
+    "seoCard2Desc": "持续关注 AI、互联网与产品动态，快速掌握新趋势。",
+    "seoCard3Title": "网站推荐",
+    "seoCard3Desc": "筛选优质网站、实用资源与高价值链接，便于长期收藏。"
   },
   "LatestReleases": {
     "title": "最新发布",
