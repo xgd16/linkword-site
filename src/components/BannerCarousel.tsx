@@ -102,9 +102,9 @@ export default function BannerCarousel() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0"
+            className="absolute inset-0 z-0"
           >
-            <div className="relative h-full w-full">
+            <div className="relative z-0 h-full w-full">
               {imgUrl ? (
                 <>
                   <div
@@ -127,7 +127,7 @@ export default function BannerCarousel() {
                     type="button"
                     onClick={() => setLightboxOpen(true)}
                     aria-label={t("enlarge")}
-                    className="relative z-1 block h-full w-full cursor-zoom-in text-left outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 focus-visible:ring-offset-app-card"
+                    className="relative z-0 block h-full w-full cursor-zoom-in text-left outline-none focus-visible:ring-2 focus-visible:ring-app-accent focus-visible:ring-offset-2 focus-visible:ring-offset-app-card"
                   >
                     <Image
                       src={imgUrl}
@@ -161,13 +161,16 @@ export default function BannerCarousel() {
         </AnimatePresence>
 
         {items.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
+          <div className="pointer-events-auto absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-2">
             {items.map((_, i) => (
               <button
                 key={i}
                 type="button"
                 aria-label={t("slideN", { n: i + 1 })}
-                onClick={() => setIndex(i)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setIndex(i)
+                }}
                 className={`h-2 rounded-full transition-all ${
                   i === index ? "w-6 bg-app-accent" : "w-2 bg-white/50 hover:bg-white/70"
                 }`}
@@ -181,16 +184,22 @@ export default function BannerCarousel() {
             <button
               type="button"
               aria-label={t("prev")}
-              onClick={() => goTo(index - 1)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white transition hover:bg-black/50"
+              onClick={(e) => {
+                e.stopPropagation()
+                goTo(index - 1)
+              }}
+              className="pointer-events-auto absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white transition hover:bg-black/50"
             >
               <i className="ri-arrow-left-s-line text-xl" />
             </button>
             <button
               type="button"
               aria-label={t("next")}
-              onClick={() => goTo(index + 1)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white transition hover:bg-black/50"
+              onClick={(e) => {
+                e.stopPropagation()
+                goTo(index + 1)
+              }}
+              className="pointer-events-auto absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white transition hover:bg-black/50"
             >
               <i className="ri-arrow-right-s-line text-xl" />
             </button>
