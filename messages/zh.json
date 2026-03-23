@@ -29,6 +29,8 @@
     "searchSubmit": "搜索",
     "searchSubmitAria": "执行导航搜索",
     "searchClearAria": "清空搜索内容",
+    "aiSearch": "AI搜索",
+    "aiSearchToggleAria": "切换 AI 搜索",
     "nav": "导航",
     "articles": "文章",
     "settings": "设置",

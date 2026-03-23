@@ -29,6 +29,8 @@
     "searchSubmit": "Search",
     "searchSubmitAria": "Search directory",
     "searchClearAria": "Clear search",
+    "aiSearch": "AI Search",
+    "aiSearchToggleAria": "Toggle AI search",
     "nav": "Directory",
     "articles": "Articles",
     "settings": "Settings",

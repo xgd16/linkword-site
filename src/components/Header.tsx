@@ -16,6 +16,7 @@ export default function Header() {
   const searchParams = useSearchParams()
   const urlKeyword = searchParams.get("keyword") ?? ""
   const cat = searchParams.get("cat") ?? ""
+  const ai = searchParams.get("ai") === "1"
   const [keyword, setKeyword] = useState(urlKeyword)
   const isNavPage = pathname === "/nav"
   const inputRef = useRef<HTMLInputElement>(null)
@@ -24,11 +25,12 @@ export default function Header() {
     setKeyword(urlKeyword)
   }, [urlKeyword])
 
-  const getNavUrl = (kw: string) => {
+  const getNavUrl = (kw: string, useAi = ai) => {
     const params = new URLSearchParams()
     const n = normalizeSearchKeyword(kw)
     if (n) params.set("keyword", n)
     if (cat) params.set("cat", cat)
+    if (useAi) params.set("ai", "1")
     const q = params.toString()
     return q ? `/nav?${q}` : "/nav"
   }
@@ -53,6 +55,11 @@ export default function Header() {
     inputRef.current?.focus()
   }
 
+  const handleAiToggle = () => {
+    if (!isNavPage) return
+    router.push(getNavUrl(keyword, !ai))
+  }
+
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
@@ -61,7 +68,8 @@ export default function Header() {
       className="fixed top-0 right-0 left-0 z-30 border-b border-app-border/80 bg-app-card/60 px-3 py-2 shadow-sm backdrop-blur-xl backdrop-saturate-150 sm:flex sm:h-14 sm:items-center sm:px-4 sm:py-0 lg:left-55 lg:pl-4"
     >
       <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-        <form onSubmit={handleSearch} className="flex w-full max-w-xl flex-1">
+        <div className="flex w-full max-w-xl flex-1 items-center gap-2">
+          <form onSubmit={handleSearch} className="flex min-w-0 flex-1">
           <div className="group/search flex w-full overflow-hidden rounded-xl border border-app-border bg-app-card-hover shadow-sm transition focus-within:border-app-accent focus-within:shadow-md focus-within:shadow-app-accent/10 focus-within:ring-2 focus-within:ring-app-accent/20">
             <div className="relative min-w-0 flex-1">
               <i className="ri-search-line pointer-events-none absolute left-3 top-1/2 z-1 -translate-y-1/2 text-base text-app-text-muted transition group-focus-within/search:text-app-accent" />
@@ -102,7 +110,29 @@ export default function Header() {
               <span className="hidden sm:inline">{t("searchSubmit")}</span>
             </motion.button>
           </div>
-        </form>
+          </form>
+          {isNavPage && (
+            <button
+              type="button"
+              onClick={handleAiToggle}
+              aria-pressed={ai}
+              aria-label={t("aiSearchToggleAria")}
+              className={`inline-flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition ${
+                ai
+                  ? "border-app-accent bg-app-accent/12 text-app-accent"
+                  : "border-app-border bg-app-card-hover text-app-text-muted hover:text-app-text"
+              }`}
+            >
+              <span
+                className={`h-2.5 w-2.5 rounded-full ${
+                  ai ? "bg-app-accent shadow-[0_0_12px_rgba(79,70,229,0.55)]" : "bg-app-text-muted/40"
+                }`}
+              />
+              <span className="hidden sm:inline">{t("aiSearch")}</span>
+              <span className="sm:hidden">AI</span>
+            </button>
+          )}
+        </div>
         <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:flex-1 sm:justify-end">
           <div className="flex items-center gap-1.5 lg:hidden">
             <Link

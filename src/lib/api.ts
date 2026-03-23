@@ -157,6 +157,7 @@ export async function getNavLinksPaginated(params?: {
   pageSize?: number
   categoryId?: number
   keyword?: string
+  ai?: boolean
   locale?: string
 }): Promise<{ list: NavLinkWithCategory[]; total: number }> {
   const loc = apiLocale(params?.locale)
@@ -166,6 +167,7 @@ export async function getNavLinksPaginated(params?: {
   if (params?.pageSize) q.set("pageSize", String(params.pageSize))
   if (params?.categoryId) q.set("categoryId", String(params.categoryId))
   if (params?.keyword) q.set("keyword", normalizeSearchKeyword(params.keyword))
+  if (params?.ai) q.set("ai", "1")
   const res = await request<{ list: NavLinkWithCategory[]; total: number }>(
     `/nav/links?${q.toString()}`
   )

@@ -29,7 +29,7 @@ export async function generateMetadata({
 
 interface PageProps {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ keyword?: string; cat?: string }>
+  searchParams: Promise<{ keyword?: string; cat?: string; ai?: string }>
 }
 
 export default async function NavPage({ params, searchParams }: PageProps) {
@@ -41,6 +41,7 @@ export default async function NavPage({ params, searchParams }: PageProps) {
   const sp = await searchParams
   const keyword = sp.keyword ?? ""
   const categoryId = sp.cat ?? ""
+  const ai = sp.ai === "1"
   const pageSize = 24
 
   let categories: Awaited<ReturnType<typeof getNavCategories>> = []
@@ -53,6 +54,7 @@ export default async function NavPage({ params, searchParams }: PageProps) {
         pageSize,
         categoryId: categoryId && categoryId !== "all" ? parseInt(categoryId, 10) : undefined,
         keyword: keyword || undefined,
+        ai,
         locale,
       }),
     ])
@@ -81,6 +83,7 @@ export default async function NavPage({ params, searchParams }: PageProps) {
           pageSize={pageSize}
           keyword={keyword}
           categoryId={categoryId}
+          ai={ai}
         />
       </Suspense>
     </PageMotion>

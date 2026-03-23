@@ -18,14 +18,20 @@ interface NavContentProps {
   pageSize: number
   keyword: string
   categoryId: string
+  ai: boolean
 }
 
-function buildNavHref(opts: { cat?: string; keyword?: string }, current: { categoryId: string; keyword: string }) {
+function buildNavHref(
+  opts: { cat?: string; keyword?: string; ai?: boolean },
+  current: { categoryId: string; keyword: string; ai: boolean }
+) {
   const p = new URLSearchParams()
   const cat = opts.cat !== undefined ? opts.cat : current.categoryId
   const kw = opts.keyword !== undefined ? opts.keyword : current.keyword
+  const ai = opts.ai !== undefined ? opts.ai : current.ai
   if (cat) p.set("cat", cat)
   if (kw) p.set("keyword", kw)
+  if (ai) p.set("ai", "1")
   const q = p.toString()
   return q ? `/nav?${q}` : "/nav"
 }
@@ -37,6 +43,7 @@ export default function NavContent({
   pageSize,
   keyword,
   categoryId,
+  ai,
 }: NavContentProps) {
   const t = useTranslations("NavContent")
   const locale = useLocale()
@@ -80,7 +87,7 @@ export default function NavContent({
     setLinks(initialLinks)
     setPage(1)
     setHasMore(initialLinks.length < total)
-  }, [keyword, categoryId, initialLinks, total])
+  }, [keyword, categoryId, ai, initialLinks, total])
 
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return
@@ -91,6 +98,7 @@ export default function NavContent({
         pageSize,
         categoryId: categoryId && categoryId !== "all" ? parseInt(categoryId, 10) : undefined,
         keyword: keyword || undefined,
+        ai,
         locale,
       })
       if (res.list.length > 0) {
@@ -108,7 +116,7 @@ export default function NavContent({
     } finally {
       setLoading(false)
     }
-  }, [loading, hasMore, page, pageSize, categoryId, keyword, total, locale])
+  }, [loading, hasMore, page, pageSize, categoryId, keyword, ai, total, locale])
 
   useEffect(() => {
     const el = sentinelRef.current
@@ -177,9 +185,9 @@ export default function NavContent({
       {categories.length > 0 && (
         <motion.div variants={staggerItem} className="flex flex-wrap gap-2">
           <Link
-            href={buildNavHref({ cat: "", keyword }, { categoryId, keyword })}
+            href={buildNavHref({ cat: "", keyword }, { categoryId, keyword, ai })}
             prefetch={false}
-            onClick={handleCategoryClick(buildNavHref({ cat: "", keyword }, { categoryId, keyword }), "")}
+            onClick={handleCategoryClick(buildNavHref({ cat: "", keyword }, { categoryId, keyword, ai }), "")}
             className={`rounded-lg border px-3 py-2 text-sm transition ${
               !activeCategoryId || activeCategoryId === "all"
                 ? "border-app-accent bg-app-accent/10 text-app-accent"
@@ -191,10 +199,10 @@ export default function NavContent({
           {categories.map((cat) => (
             <Link
               key={cat.id}
-              href={buildNavHref({ cat: String(cat.id), keyword }, { categoryId, keyword })}
+              href={buildNavHref({ cat: String(cat.id), keyword }, { categoryId, keyword, ai })}
               prefetch={false}
               onClick={handleCategoryClick(
-                buildNavHref({ cat: String(cat.id), keyword }, { categoryId, keyword }),
+                buildNavHref({ cat: String(cat.id), keyword }, { categoryId, keyword, ai }),
                 String(cat.id)
               )}
               className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
