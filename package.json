@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "NODE_OPTIONS='--max-old-space-size=256 --max-semi-space-size=4 --optimize-for-size' next build",
-    "build:debug-memory": "NODE_OPTIONS='--max-old-space-size=256 --max-semi-space-size=4 --optimize-for-size' next build --experimental-debug-memory-usage",
+    "build": "NODE_OPTIONS='--max-old-space-size=256 --max-semi-space-size=4' next build",
+    "build:debug-memory": "NODE_OPTIONS='--max-old-space-size=256 --max-semi-space-size=4' next build --experimental-debug-memory-usage",
     "start": "next start",
-    "release": "NODE_OPTIONS='--max-old-space-size=256 --max-semi-space-size=4 --optimize-for-size' next build && next start",
+    "release": "NODE_OPTIONS='--max-old-space-size=256 --max-semi-space-size=4' next build && next start",
     "lint": "eslint"
   },
   "dependencies": {
