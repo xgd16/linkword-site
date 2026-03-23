@@ -56,7 +56,6 @@ export default function Header() {
   }
 
   const handleAiToggle = () => {
-    if (!isNavPage) return
     router.push(getNavUrl(keyword, !ai))
   }
 
@@ -111,27 +110,25 @@ export default function Header() {
             </motion.button>
           </div>
           </form>
-          {isNavPage && (
-            <button
-              type="button"
-              onClick={handleAiToggle}
-              aria-pressed={ai}
-              aria-label={t("aiSearchToggleAria")}
-              className={`inline-flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition ${
-                ai
-                  ? "border-app-accent bg-app-accent/12 text-app-accent"
-                  : "border-app-border bg-app-card-hover text-app-text-muted hover:text-app-text"
+          <button
+            type="button"
+            onClick={handleAiToggle}
+            aria-pressed={ai}
+            aria-label={t("aiSearchToggleAria")}
+            className={`inline-flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition ${
+              ai
+                ? "border-app-accent bg-app-accent/12 text-app-accent"
+                : "border-app-border bg-app-card-hover text-app-text-muted hover:text-app-text"
+            }`}
+          >
+            <span
+              className={`h-2.5 w-2.5 rounded-full ${
+                ai ? "bg-app-accent shadow-[0_0_12px_rgba(79,70,229,0.55)]" : "bg-app-text-muted/40"
               }`}
-            >
-              <span
-                className={`h-2.5 w-2.5 rounded-full ${
-                  ai ? "bg-app-accent shadow-[0_0_12px_rgba(79,70,229,0.55)]" : "bg-app-text-muted/40"
-                }`}
-              />
-              <span className="hidden sm:inline">{t("aiSearch")}</span>
-              <span className="sm:hidden">AI</span>
-            </button>
-          )}
+            />
+            <span className="hidden sm:inline">{t("aiSearch")}</span>
+            <span className="sm:hidden">AI</span>
+          </button>
         </div>
         <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:flex-1 sm:justify-end">
           <div className="flex items-center gap-1.5 lg:hidden">
