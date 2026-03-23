@@ -25,7 +25,10 @@
     "settings": "Settings"
   },
   "Header": {
-    "searchPlaceholder": "Search",
+    "searchPlaceholder": "Search nav (space = match all words)",
+    "searchSubmit": "Search",
+    "searchSubmitAria": "Search directory",
+    "searchClearAria": "Clear search",
     "nav": "Directory",
     "articles": "Articles",
     "settings": "Settings",

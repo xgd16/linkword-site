@@ -110,12 +110,12 @@ export default async function LocaleLayout({
               </Sidebar>
               <Suspense
                 fallback={
-                  <header className="fixed top-0 right-0 left-0 z-30 h-14 border-b border-app-border/80 bg-app-card/60 lg:left-[220px]" />
+                  <header className="fixed top-0 right-0 left-0 z-30 h-24 border-b border-app-border/80 bg-app-card/60 sm:h-14 lg:left-55" />
                 }
               >
                 <Header />
               </Suspense>
-              <main className="min-h-screen pt-14 lg:pl-[220px]">{children}</main>
+              <main className="min-h-screen pt-24 sm:pt-14 lg:pl-55">{children}</main>
             </SettingsProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

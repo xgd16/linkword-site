@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { Link, useRouter, usePathname } from "@/i18n/navigation"
 import { motion } from "motion/react"
 import ThemeSelector from "./ThemeSelector"
 import LanguageSwitcher from "./LanguageSwitcher"
+import { normalizeSearchKeyword } from "@/lib/searchKeyword"
 
 export default function Header() {
   const t = useTranslations("Header")
@@ -17,6 +18,7 @@ export default function Header() {
   const cat = searchParams.get("cat") ?? ""
   const [keyword, setKeyword] = useState(urlKeyword)
   const isNavPage = pathname === "/nav"
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setKeyword(urlKeyword)
@@ -24,7 +26,8 @@ export default function Header() {
 
   const getNavUrl = (kw: string) => {
     const params = new URLSearchParams()
-    if (kw.trim()) params.set("keyword", kw.trim())
+    const n = normalizeSearchKeyword(kw)
+    if (n) params.set("keyword", n)
     if (cat) params.set("cat", cat)
     const q = params.toString()
     return q ? `/nav?${q}` : "/nav"
@@ -32,7 +35,22 @@ export default function Header() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    router.push(getNavUrl(keyword))
+    const targetUrl = getNavUrl(keyword)
+    const currentQuery = searchParams.toString()
+    const currentUrl = currentQuery ? `${pathname}?${currentQuery}` : pathname
+    if (targetUrl === currentUrl) {
+      router.refresh()
+      return
+    }
+    router.push(targetUrl)
+  }
+
+  const handleClearSearch = () => {
+    setKeyword("")
+    if (isNavPage) {
+      router.push(getNavUrl(""))
+    }
+    inputRef.current?.focus()
   }
 
   return (
@@ -40,49 +58,79 @@ export default function Header() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="fixed top-0 right-0 left-0 z-30 flex h-14 items-center justify-between gap-2 border-b border-app-border/80 bg-app-card/60 px-4 shadow-sm backdrop-blur-xl backdrop-saturate-150 lg:left-[220px] lg:pl-4"
+      className="fixed top-0 right-0 left-0 z-30 border-b border-app-border/80 bg-app-card/60 px-3 py-2 shadow-sm backdrop-blur-xl backdrop-saturate-150 sm:flex sm:h-14 sm:items-center sm:px-4 sm:py-0 lg:left-55 lg:pl-4"
     >
-      <div className="flex flex-1 items-center gap-4">
-        <form onSubmit={handleSearch} className="flex max-w-xl flex-1">
-          <div className="relative flex w-full">
-            <i className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-base text-app-text-muted" />
-            <input
-              type="search"
-              value={keyword}
-              onChange={(e) => {
-                const v = e.target.value
-                setKeyword(v)
-                if (isNavPage && !v.trim()) {
-                  router.push(getNavUrl(v))
-                }
-              }}
-              placeholder={t("searchPlaceholder")}
-              className="w-full rounded-lg border border-app-border bg-app-card-hover py-2 pl-9 pr-4 text-sm text-app-text placeholder-app-text-muted outline-none transition placeholder:italic focus:border-app-accent focus:ring-2 focus:ring-app-accent/20"
-            />
+      <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+        <form onSubmit={handleSearch} className="flex w-full max-w-xl flex-1">
+          <div className="group/search flex w-full overflow-hidden rounded-xl border border-app-border bg-app-card-hover shadow-sm transition focus-within:border-app-accent focus-within:shadow-md focus-within:shadow-app-accent/10 focus-within:ring-2 focus-within:ring-app-accent/20">
+            <div className="relative min-w-0 flex-1">
+              <i className="ri-search-line pointer-events-none absolute left-3 top-1/2 z-1 -translate-y-1/2 text-base text-app-text-muted transition group-focus-within/search:text-app-accent" />
+              <input
+                ref={inputRef}
+                type="search"
+                value={keyword}
+                onChange={(e) => {
+                  const v = e.target.value
+                  setKeyword(v)
+                  if (isNavPage && !normalizeSearchKeyword(v)) {
+                    router.push(getNavUrl(v))
+                  }
+                }}
+                placeholder={t("searchPlaceholder")}
+                enterKeyHint="search"
+                className="app-search-input w-full border-0 bg-transparent py-2.5 pl-9 pr-11 text-sm text-app-text placeholder:text-app-text-muted/90 placeholder:italic outline-none focus:ring-0"
+              />
+              {keyword && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  aria-label={t("searchClearAria")}
+                  className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-app-text-muted transition hover:bg-app-card hover:text-app-text"
+                >
+                  <i className="ri-close-line text-base" aria-hidden />
+                </button>
+              )}
+            </div>
+            <motion.button
+              type="submit"
+              aria-label={t("searchSubmitAria")}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative flex shrink-0 items-center gap-1.5 border-l border-app-border/80 bg-linear-to-br from-app-accent/15 via-app-accent/10 to-transparent px-3.5 py-2 text-sm font-medium text-app-accent transition-colors hover:border-app-accent/40 hover:from-app-accent hover:via-app-accent hover:to-app-accent-secondary hover:text-white hover:shadow-inner sm:px-4"
+            >
+              <i className="ri-search-2-line text-lg leading-none" aria-hidden />
+              <span className="hidden sm:inline">{t("searchSubmit")}</span>
+            </motion.button>
           </div>
         </form>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/nav"
-            className="rounded-lg px-3 py-2 text-sm text-app-text-muted transition hover:text-app-text lg:hidden"
-          >
-            {t("nav")}
-          </Link>
-          <Link
-            href="/articles"
-            className="rounded-lg px-3 py-2 text-sm text-app-text-muted transition hover:text-app-text lg:hidden"
-          >
-            {t("articles")}
-          </Link>
-          <LanguageSwitcher />
-          <Link
-            href="/settings"
-            className="rounded-lg p-2 text-app-text-muted transition hover:text-app-text"
-            aria-label={t("settingsAria")}
-          >
-            <i className="ri-settings-3-line text-lg" />
-          </Link>
-          <ThemeSelector />
+        <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:flex-1 sm:justify-end">
+          <div className="flex items-center gap-1.5 lg:hidden">
+            <Link
+              href="/nav"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-app-border bg-app-card/70 px-2.5 py-2 text-xs text-app-text-muted transition hover:bg-app-card-hover hover:text-app-text sm:px-3 sm:text-sm"
+            >
+              <i className="ri-links-line text-base" />
+              <span>{t("nav")}</span>
+            </Link>
+            <Link
+              href="/articles"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-app-border bg-app-card/70 px-2.5 py-2 text-xs text-app-text-muted transition hover:bg-app-card-hover hover:text-app-text sm:px-3 sm:text-sm"
+            >
+              <i className="ri-article-line text-base" />
+              <span>{t("articles")}</span>
+            </Link>
+          </div>
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <LanguageSwitcher />
+            <Link
+              href="/settings"
+              className="rounded-lg p-2 text-app-text-muted transition hover:bg-app-card-hover hover:text-app-text"
+              aria-label={t("settingsAria")}
+            >
+              <i className="ri-settings-3-line text-lg" />
+            </Link>
+            <ThemeSelector />
+          </div>
         </div>
       </div>
     </motion.header>

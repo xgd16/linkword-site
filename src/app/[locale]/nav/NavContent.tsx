@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react"
 import { motion } from "motion/react"
 import type { NavCategoryBrief, NavLinkWithCategory } from "@/lib/api"
 import { getNavLinksPaginated } from "@/lib/api"
+import { normalizeSearchKeyword, searchTokensFromKeyword } from "@/lib/searchKeyword"
 import NavLinkCard from "@/components/NavLinkCard"
 import NavLinkCardSkeleton from "@/components/NavLinkCardSkeleton"
 import { spring, staggerContainer, staggerItem } from "@/lib/motion"
@@ -48,6 +49,7 @@ export default function NavContent({
   const sentinelRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const highlightTokens = searchTokensFromKeyword(normalizeSearchKeyword(keyword))
 
   useEffect(() => {
     setActiveCategoryId(categoryId)
@@ -92,16 +94,21 @@ export default function NavContent({
         locale,
       })
       if (res.list.length > 0) {
-        setLinks((prev) => [...prev, ...res.list])
+        setLinks((prev) => {
+          const merged = [...prev, ...res.list]
+          setHasMore(merged.length < total)
+          return merged
+        })
         setPage((p) => p + 1)
+      } else {
+        setHasMore(false)
       }
-      setHasMore(links.length + res.list.length < total)
     } catch {
       setHasMore(false)
     } finally {
       setLoading(false)
     }
-  }, [loading, hasMore, page, pageSize, categoryId, keyword, links.length, total, locale])
+  }, [loading, hasMore, page, pageSize, categoryId, keyword, total, locale])
 
   useEffect(() => {
     const el = sentinelRef.current
@@ -233,6 +240,7 @@ export default function NavContent({
                 description: link.description ?? "",
               }}
               categoryName={link.categoryName}
+              highlightTokens={highlightTokens.length > 0 ? highlightTokens : undefined}
             />
           ))}
         </motion.div>

@@ -1,3 +1,5 @@
+import { normalizeSearchKeyword } from "@/lib/searchKeyword"
+
 const DEFAULT_API = "http://localhost:9901"
 
 /** 客户端请求使用公开 API 地址；服务端渲染（SSR）使用 API_BASE_SERVER（若配置） */
@@ -163,7 +165,7 @@ export async function getNavLinksPaginated(params?: {
   if (params?.pageNum) q.set("pageNum", String(params.pageNum))
   if (params?.pageSize) q.set("pageSize", String(params.pageSize))
   if (params?.categoryId) q.set("categoryId", String(params.categoryId))
-  if (params?.keyword) q.set("keyword", params.keyword)
+  if (params?.keyword) q.set("keyword", normalizeSearchKeyword(params.keyword))
   const res = await request<{ list: NavLinkWithCategory[]; total: number }>(
     `/nav/links?${q.toString()}`
   )
@@ -182,7 +184,7 @@ export async function getPublishedArticleList(params?: {
   q.set("locale", loc)
   if (params?.pageNum) q.set("pageNum", String(params.pageNum))
   if (params?.pageSize) q.set("pageSize", String(params.pageSize))
-  if (params?.keyword) q.set("keyword", params.keyword)
+  if (params?.keyword) q.set("keyword", normalizeSearchKeyword(params.keyword))
   if (params?.categoryId) q.set("categoryId", String(params.categoryId))
   const res = await request<{ list: ArticleItem[]; total: number }>(
     `/article/published/list?${q.toString()}`,

@@ -25,7 +25,10 @@
     "settings": "设置"
   },
   "Header": {
-    "searchPlaceholder": "搜索",
+    "searchPlaceholder": "搜索导航（多个词用空格，需同时匹配）",
+    "searchSubmit": "搜索",
+    "searchSubmitAria": "执行导航搜索",
+    "searchClearAria": "清空搜索内容",
     "nav": "导航",
     "articles": "文章",
     "settings": "设置",

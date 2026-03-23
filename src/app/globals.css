@@ -136,6 +136,16 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* 搜索框统一使用站内图标按钮，隐藏浏览器原生清空按钮 */
+.app-search-input::-webkit-search-cancel-button,
+.app-search-input::-webkit-search-decoration,
+.app-search-input::-webkit-search-results-button,
+.app-search-input::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
 /* 背景慢动态光晕 */
 @keyframes bg-float-1 {
   0%, 100% { transform: translate(0, 0) scale(1); }

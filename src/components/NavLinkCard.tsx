@@ -10,6 +10,7 @@ import type { NavTreeLink } from "@/lib/api"
 import { reportNavLinkClick } from "@/lib/api"
 import { useNavClickMode } from "./SettingsProvider"
 import { spring, staggerItem } from "@/lib/motion"
+import HighlightPlain from "./HighlightPlain"
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
 
@@ -37,14 +38,17 @@ function getIconSrc(icon: string, domain: string): { primary: string; fallback: 
 interface NavLinkCardProps {
   link: NavTreeLink
   categoryName: string
+  /** 导航关键词检索时高亮匹配片段 */
+  highlightTokens?: string[]
 }
 
-export default function NavLinkCard({ link, categoryName }: NavLinkCardProps) {
+export default function NavLinkCard({ link, categoryName, highlightTokens = [] }: NavLinkCardProps) {
   const t = useTranslations("NavLinkCard")
   const domain = getDomain(link.url)
   const { primary: iconSrc, fallback: faviconUrl } = getIconSrc(link.icon ?? "", domain)
   const [iconError, setIconError] = useState<Record<string, boolean>>({})
   const { navClickMode } = useNavClickMode()
+  const hl = highlightTokens.length > 0 ? highlightTokens : undefined
 
   const isDirect = navClickMode === "direct"
 
@@ -120,10 +124,10 @@ export default function NavLinkCard({ link, categoryName }: NavLinkCardProps) {
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="font-semibold text-app-text transition-opacity group-hover:opacity-90">
-              {link.title}
+              {hl ? <HighlightPlain text={link.title} tokens={hl} /> : link.title}
             </h3>
             <p className="mt-0.5 text-xs text-app-text-muted">
-              {categoryName}
+              {hl ? <HighlightPlain text={categoryName} tokens={hl} /> : categoryName}
             </p>
           </div>
         </div>
@@ -133,8 +137,21 @@ export default function NavLinkCard({ link, categoryName }: NavLinkCardProps) {
           <div className="mt-3 flex items-center gap-2 rounded-lg bg-app-card-hover px-3 py-2">
             <i className="ri-flashlight-fill text-base text-[#f59e0b]" />
             <span className="truncate text-sm text-app-text">
-              {link.slogan || link.description?.slice(0, 24) || categoryName}
-              {!link.slogan && (link.description?.length ?? 0) > 24 ? "..." : ""}
+              {hl ? (
+                <HighlightPlain
+                  text={
+                    link.slogan ||
+                    (link.description ? link.description.slice(0, 80) : "") ||
+                    categoryName
+                  }
+                  tokens={hl}
+                />
+              ) : (
+                <>
+                  {link.slogan || link.description?.slice(0, 24) || categoryName}
+                  {!link.slogan && (link.description?.length ?? 0) > 24 ? "..." : ""}
+                </>
+              )}
             </span>
           </div>
         )}
