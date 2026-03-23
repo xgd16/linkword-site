@@ -1,11 +1,23 @@
 "use client"
 
-import { createContext, useContext, useTransition } from "react"
+import { createContext, useContext, useEffect, useState, useTransition } from "react"
 import { useRouter } from "@/i18n/navigation"
+
+export type SearchNavigationIntent =
+  | "search"
+  | "ai-search"
+  | "clear"
+  | "toggle-ai"
+  | "filter"
+  | "generic"
 
 type SearchTransitionContextValue = {
   isSearchPending: boolean
-  navigateToNav: (url: string, replace?: boolean) => void
+  pendingIntent: SearchNavigationIntent | null
+  navigateToNav: (
+    url: string,
+    options?: { replace?: boolean; intent?: SearchNavigationIntent }
+  ) => void
 }
 
 const SearchTransitionContext = createContext<SearchTransitionContextValue | null>(
@@ -19,8 +31,21 @@ export function SearchTransitionProvider({
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const [pendingIntent, setPendingIntent] = useState<SearchNavigationIntent | null>(null)
 
-  const navigateToNav = (url: string, replace = false) => {
+  useEffect(() => {
+    if (!isPending) {
+      setPendingIntent(null)
+    }
+  }, [isPending])
+
+  const navigateToNav = (
+    url: string,
+    options?: { replace?: boolean; intent?: SearchNavigationIntent }
+  ) => {
+    const replace = options?.replace ?? false
+    const intent = options?.intent ?? "generic"
+    setPendingIntent(intent)
     startTransition(() => {
       if (replace) {
         router.replace(url)
@@ -32,7 +57,7 @@ export function SearchTransitionProvider({
 
   return (
     <SearchTransitionContext.Provider
-      value={{ isSearchPending: isPending, navigateToNav }}
+      value={{ isSearchPending: isPending, pendingIntent, navigateToNav }}
     >
       {children}
     </SearchTransitionContext.Provider>
@@ -45,8 +70,12 @@ export function useSearchTransition() {
   if (ctx) return ctx
   return {
     isSearchPending: false,
-    navigateToNav: (url: string, replace = false) => {
-      if (replace) router.replace(url)
+    pendingIntent: null,
+    navigateToNav: (
+      url: string,
+      options?: { replace?: boolean; intent?: SearchNavigationIntent }
+    ) => {
+      if (options?.replace) router.replace(url)
       else router.push(url)
     },
   }

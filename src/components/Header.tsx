@@ -43,14 +43,17 @@ export default function Header() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
+    const normalizedKeyword = normalizeSearchKeyword(keyword)
     const targetUrl = getNavUrl(keyword)
-    navigateToNav(targetUrl)
+    navigateToNav(targetUrl, {
+      intent: aiEnabled && normalizedKeyword ? "ai-search" : "search",
+    })
   }
 
   const handleClearSearch = () => {
     setKeyword("")
     if (isNavPage) {
-      navigateToNav(getNavUrl(""), true)
+      navigateToNav(getNavUrl(""), { replace: true, intent: "clear" })
     }
     inputRef.current?.focus()
   }
@@ -58,7 +61,7 @@ export default function Header() {
   const handleAiToggle = () => {
     const nextAi = !aiEnabled
     setAiEnabled(nextAi)
-    navigateToNav(getNavUrl(keyword, nextAi))
+    navigateToNav(getNavUrl(keyword, nextAi), { intent: "toggle-ai" })
   }
 
   return (
@@ -82,7 +85,7 @@ export default function Header() {
                   const v = e.target.value
                   setKeyword(v)
                   if (isNavPage && !normalizeSearchKeyword(v)) {
-                    navigateToNav(getNavUrl(v))
+                    navigateToNav(getNavUrl(v), { replace: true, intent: "clear" })
                   }
                 }}
                 placeholder={aiEnabled ? t("searchPlaceholderAi") : t("searchPlaceholder")}

@@ -3,7 +3,6 @@
 import { useLocale, useTranslations } from "next-intl"
 import { Link, useRouter } from "@/i18n/navigation"
 import { useCallback, useEffect, useRef, useState, useTransition } from "react"
-import { useSearchParams } from "next/navigation"
 import { motion } from "motion/react"
 import type { NavCategoryBrief, NavLinkWithCategory } from "@/lib/api"
 import { getNavLinksPaginated } from "@/lib/api"
@@ -49,8 +48,7 @@ export default function NavContent({
 }: NavContentProps) {
   const t = useTranslations("NavContent")
   const locale = useLocale()
-  const searchParams = useSearchParams()
-  const { isSearchPending } = useSearchTransition()
+  const { isSearchPending, pendingIntent } = useSearchTransition()
   const [links, setLinks] = useState(initialLinks)
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -61,8 +59,7 @@ export default function NavContent({
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const highlightTokens = searchTokensFromKeyword(normalizeSearchKeyword(keyword))
-  const isAiSearchPending =
-    (isSearchPending || isPending) && searchParams.get("ai") === "1"
+  const isAiSearchPending = isSearchPending && pendingIntent === "ai-search"
 
   useEffect(() => {
     setActiveCategoryId(categoryId)
@@ -164,7 +161,7 @@ export default function NavContent({
           className="pointer-events-auto flex items-center gap-3 rounded-2xl border border-app-border/80 bg-app-card/80 px-3 py-2.5 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl"
         >
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-app-card-hover text-app-accent">
-            <i className={`${loading || isPending || isSearchPending ? "ri-loader-4-line animate-spin" : "ri-stack-line"} text-base`} />
+            <i className={`${loading || isPending ? "ri-loader-4-line animate-spin" : "ri-stack-line"} text-base`} />
           </div>
           <div className="leading-tight">
             <div className="text-[10px] uppercase tracking-[0.18em] text-app-text-muted">
@@ -271,7 +268,7 @@ export default function NavContent({
       )}
 
       <motion.div variants={staggerItem} className="flex flex-col items-center gap-4 py-6">
-        {(loading || isPending || isSearchPending) && (
+        {(loading || isPending) && (
           <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: Math.min(4, pageSize) }).map((_, i) => (
               <NavLinkCardSkeleton key={`skeleton-${i}`} />
@@ -279,7 +276,7 @@ export default function NavContent({
           </div>
         )}
 
-        {hasMore && !loading && !isPending && !isSearchPending && <div ref={sentinelRef} className="h-1 w-full" />}
+        {hasMore && !loading && !isPending && <div ref={sentinelRef} className="h-1 w-full" />}
       </motion.div>
     </motion.div>
   )
