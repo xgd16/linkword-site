@@ -26,6 +26,7 @@
   },
   "Header": {
     "searchPlaceholder": "搜索导航（多个词用空格，需同时匹配）",
+    "searchPlaceholderAi": "您可以用一句话来描述您想要的",
     "searchSubmit": "搜索",
     "searchSubmitAria": "执行导航搜索",
     "searchClearAria": "清空搜索内容",

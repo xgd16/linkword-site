@@ -26,6 +26,7 @@
   },
   "Header": {
     "searchPlaceholder": "Search nav (space = match all words)",
+    "searchPlaceholderAi": "Describe what you want in a sentence",
     "searchSubmit": "Search",
     "searchSubmitAria": "Search directory",
     "searchClearAria": "Clear search",

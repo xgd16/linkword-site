@@ -41,14 +41,6 @@ export default function Header() {
   }
 
   const navigateToNav = (url: string, replace = false) => {
-    if (typeof window !== "undefined") {
-      if (replace) {
-        window.location.replace(url)
-      } else {
-        window.location.assign(url)
-      }
-      return
-    }
     if (replace) {
       router.replace(url)
     } else {
@@ -100,7 +92,7 @@ export default function Header() {
                     router.push(getNavUrl(v))
                   }
                 }}
-                placeholder={t("searchPlaceholder")}
+                placeholder={aiEnabled ? t("searchPlaceholderAi") : t("searchPlaceholder")}
                 enterKeyHint="search"
                 className="app-search-input w-full border-0 bg-transparent py-2.5 pl-9 pr-11 text-sm text-app-text placeholder:text-app-text-muted/90 placeholder:italic outline-none focus:ring-0"
               />
