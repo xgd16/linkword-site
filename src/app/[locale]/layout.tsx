@@ -46,6 +46,7 @@ export async function generateMetadata({
     description,
     keywords,
     authors: [{ name: SITE_NAME }],
+    robots: { index: true, follow: true },
     openGraph: {
       type: "website",
       locale: ogLocale,
