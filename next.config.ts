@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
     staticGenerationRetryCount: 1,
   },
   productionBrowserSourceMaps: false,
+  // 限制 webpack 并行编译线程数，防止低内存机器在 build 时因多进程 OOM
+  webpack(config) {
+    config.parallelism = 1
+    return config
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "**.linkwordx.xyz", pathname: "/**", port: "" },
