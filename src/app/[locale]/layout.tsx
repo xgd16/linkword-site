@@ -17,6 +17,7 @@ import { SITE_NAME, SITE_URL } from "@/lib/site"
 import { routing } from "@/i18n/routing"
 import { fullLocalizedUrl } from "@/lib/locale-url"
 import SiteVisitReporter from "@/components/SiteVisitReporter"
+import { fontMono, fontSans } from "../fonts"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -90,15 +91,9 @@ export default async function LocaleLayout({
 
   return (
     <html lang={lang} suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="min-h-screen text-app-text antialiased">
+      <body
+        className={`min-h-screen text-app-text antialiased ${fontSans.variable} ${fontMono.variable}`}
+      >
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             <SettingsProvider>
