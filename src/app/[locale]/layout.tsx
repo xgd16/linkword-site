@@ -19,6 +19,9 @@ import { fullLocalizedUrl } from "@/lib/locale-url"
 import SiteVisitReporter from "@/components/SiteVisitReporter"
 import { fontMono, fontSans } from "../fonts"
 
+/** 与首页等 ISR 一致，避免布局内 fetch no-store 拖成全站动态 → 主文档 Cache-Control: no-store 阻断 bfcache */
+export const revalidate = 120
+
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }

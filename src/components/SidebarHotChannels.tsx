@@ -6,7 +6,7 @@ import type { Locale } from "@/i18n/routing"
 /** 热门频道（服务端异步），供 layout 用 Suspense 包裹 */
 export default async function SidebarHotChannels({ locale }: { locale: Locale }) {
   const t = await getTranslations("SidebarHot")
-  const list = await getNavCategoriesHot(5, locale)
+  const list = await getNavCategoriesHot(5, locale, { revalidateSeconds: 120 })
   if (list.length === 0) return null
   return (
     <>

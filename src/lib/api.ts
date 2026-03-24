@@ -105,10 +105,19 @@ export async function getNavCategories(locale?: string): Promise<NavCategoryBrie
 }
 
 /** 热门频道：按分类下链接总点击数排序，用于侧边栏 */
-export async function getNavCategoriesHot(limit = 5, locale?: string): Promise<NavCategoryBrief[]> {
+export async function getNavCategoriesHot(
+  limit = 5,
+  locale?: string,
+  opts?: { revalidateSeconds?: number }
+): Promise<NavCategoryBrief[]> {
   const loc = apiLocale(locale)
+  const fetchInit: FetchInit =
+    opts?.revalidateSeconds && opts.revalidateSeconds > 0
+      ? { next: { revalidate: opts.revalidateSeconds } }
+      : { cache: "no-store" }
   const res = await request<{ list: NavCategoryBrief[] }>(
-    `/nav/categories/hot?limit=${limit}&locale=${loc}`
+    `/nav/categories/hot?limit=${limit}&locale=${loc}`,
+    fetchInit
   )
   const list = res.data?.list ?? []
   return list.map((c) => ({ id: c.id, name: c.name, icon: c.icon }))
