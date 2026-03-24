@@ -111,16 +111,11 @@ export default function BannerCarousel() {
                     className="pointer-events-none absolute inset-0 overflow-hidden"
                     aria-hidden
                   >
-                    <div className="absolute -inset-10">
-                      <Image
-                        src={imgUrl}
-                        alt=""
-                        fill
-                        unoptimized
-                        sizes="100vw"
-                        className="scale-110 object-cover object-center blur-2xl saturate-125"
-                      />
-                    </div>
+                    {/* 用 CSS 背景替代 img，避免模糊层被当作 LCP 且带 lazy */}
+                    <div
+                      className="absolute -inset-10 scale-110 bg-cover bg-center blur-2xl saturate-125"
+                      style={{ backgroundImage: `url(${imgUrl})` }}
+                    />
                     <div className="absolute inset-0 bg-app-card/40 backdrop-blur-xl ring-1 ring-inset ring-black/4 dark:ring-white/6" />
                   </div>
                   <button
@@ -133,8 +128,10 @@ export default function BannerCarousel() {
                       src={imgUrl}
                       alt={current.title || ""}
                       fill
+                      priority={index === 0}
+                      fetchPriority={index === 0 ? "high" : "low"}
                       unoptimized
-                      sizes="100vw"
+                      sizes="(max-width:1024px) 100vw, 66vw"
                       className="object-contain object-center drop-shadow-sm"
                     />
                   </button>
@@ -161,7 +158,7 @@ export default function BannerCarousel() {
         </AnimatePresence>
 
         {items.length > 1 && (
-          <div className="pointer-events-auto absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+          <div className="pointer-events-auto absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-1">
             {items.map((_, i) => (
               <button
                 key={i}
@@ -171,10 +168,14 @@ export default function BannerCarousel() {
                   e.stopPropagation()
                   setIndex(i)
                 }}
-                className={`h-2 rounded-full transition-all ${
-                  i === index ? "w-6 bg-app-accent" : "w-2 bg-white/50 hover:bg-white/70"
-                }`}
-              />
+                className="flex h-9 min-h-9 min-w-9 items-center justify-center rounded-full p-0 touch-manipulation"
+              >
+                <span
+                  className={`block rounded-full transition-all ${
+                    i === index ? "h-2 w-6 bg-app-accent" : "h-2 w-2 bg-white/50 hover:bg-white/70"
+                  }`}
+                />
+              </button>
             ))}
           </div>
         )}

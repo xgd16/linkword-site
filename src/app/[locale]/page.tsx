@@ -9,7 +9,8 @@ import FeaturedBanner from "@/components/FeaturedBanner"
 import LatestReleases from "@/components/LatestReleases"
 import PageMotion from "@/components/PageMotion"
 
-export const dynamic = "force-dynamic"
+/** 与文章列表 fetch 的 revalidateSeconds 对齐，便于静态生成与往返缓存 */
+export const revalidate = 120
 
 export async function generateMetadata({
   params,
@@ -57,7 +58,12 @@ export default async function HomePage({
 
   let articleRes: { list: ArticleItem[]; total: number } = { list: [], total: 0 }
   try {
-    articleRes = await getPublishedArticleList({ pageNum: 1, pageSize: 24, locale })
+    articleRes = await getPublishedArticleList({
+      pageNum: 1,
+      pageSize: 24,
+      locale,
+      revalidateSeconds: 120,
+    })
   } catch {
     // 忽略 API 错误
   }

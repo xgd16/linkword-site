@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import Image from "next/image"
 import { useLocale, useTranslations } from "next-intl"
 import { motion } from "motion/react"
@@ -36,6 +36,11 @@ export default function ClickRanking() {
   const locale = useLocale()
   const [list, setList] = useState<NavLinkClickRankItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [faviconFailed, setFaviconFailed] = useState<Record<number, boolean>>({})
+
+  const markFaviconFailed = useCallback((id: number) => {
+    setFaviconFailed((prev) => (prev[id] ? prev : { ...prev, [id]: true }))
+  }, [])
 
   useEffect(() => {
     getNavLinkClickRank(10, locale)
@@ -76,7 +81,7 @@ export default function ClickRanking() {
       <div className={cardClass}>
         <div className="flex shrink-0 items-center gap-2">
           <i className="ri-bar-chart-box-line text-lg text-app-accent" />
-          <h3 className="font-semibold text-app-text">{t("title")}</h3>
+          <h2 className="font-semibold text-app-text">{t("title")}</h2>
         </div>
         <p className="mt-4 flex flex-1 items-center justify-center text-sm text-app-text-muted">
           {t("empty")}
@@ -94,7 +99,7 @@ export default function ClickRanking() {
     >
       <div className="flex shrink-0 items-center gap-2">
         <i className="ri-bar-chart-box-line text-lg text-app-accent" />
-        <h3 className="font-semibold text-app-text">{t("title")}</h3>
+        <h2 className="font-semibold text-app-text">{t("title")}</h2>
       </div>
       <p className="mt-1 shrink-0 text-sm text-app-text-muted">{t("sortHint")}</p>
       <div className="mt-3 flex flex-1 flex-col gap-1.5 overflow-y-auto">
@@ -117,7 +122,7 @@ export default function ClickRanking() {
             </span>
             {item.icon?.startsWith("ri-") ? (
               <i className={`${item.icon} shrink-0 text-base text-app-accent`} />
-            ) : getIconSrc(item.icon, item.url) ? (
+            ) : getIconSrc(item.icon, item.url) && !faviconFailed[item.id] ? (
               <Image
                 src={getIconSrc(item.icon, item.url)}
                 alt=""
@@ -125,7 +130,10 @@ export default function ClickRanking() {
                 height={20}
                 unoptimized
                 className="h-5 w-5 shrink-0 rounded object-contain"
+                onError={() => markFaviconFailed(item.id)}
               />
+            ) : !item.icon?.startsWith("ri-") ? (
+              <i className="ri-links-line shrink-0 text-base text-app-accent/80" aria-hidden />
             ) : null}
             <span className="min-w-0 flex-1 truncate">{item.title}</span>
             <span className="shrink-0 text-xs text-app-text-muted">

@@ -70,9 +70,9 @@ export default function FeaturedBanner({ articles }: FeaturedBannerProps) {
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <h4 className="truncate font-medium text-app-text group-hover:text-app-accent">
+                <h3 className="truncate font-medium text-app-text group-hover:text-app-accent">
                   {article.title}
-                </h4>
+                </h3>
                 <p className="mt-0.5 line-clamp-2 text-xs text-app-text-muted">
                   {article.summary || t("noSummary")}
                 </p>

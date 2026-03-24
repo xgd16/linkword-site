@@ -50,12 +50,19 @@ interface ApiResponse<T> {
   message?: string
 }
 
-async function request<T>(url: string, init?: RequestInit): Promise<ApiResponse<T>> {
+type FetchInit = RequestInit & { next?: { revalidate?: number } }
+
+async function request<T>(url: string, init?: FetchInit): Promise<ApiResponse<T>> {
   const base = getApiBase()
   const path = url.startsWith("/") ? url : `/${url}`
-  // 服务端默认不缓存，避免与 locale 相关的接口在 SSG/导航后被 Next 数据缓存串单
+  const usesNextRevalidate =
+    typeof init?.next?.revalidate === "number" && init.next.revalidate > 0
+  // 服务端默认不缓存，避免与 locale 相关的接口在 SSG/导航后被 Next 数据缓存串单；
+  // 首页等场景可传 next.revalidate 以配合 ISR 与往返缓存。
   const res = await fetch(`${base}${path}`, {
-    ...(typeof window === "undefined" && init?.cache === undefined ? { cache: "no-store" as const } : {}),
+    ...(typeof window === "undefined" && init?.cache === undefined && !usesNextRevalidate
+      ? { cache: "no-store" as const }
+      : {}),
     ...init,
     headers: { "Content-Type": "application/json", ...init?.headers },
   })
@@ -180,6 +187,8 @@ export async function getPublishedArticleList(params?: {
   keyword?: string
   categoryId?: number
   locale?: string
+  /** 大于 0 时使用 Next 数据缓存（ISR），利于页面可缓存与 bfcache；列表/筛选页勿传 */
+  revalidateSeconds?: number
 }): Promise<{ list: ArticleItem[]; total: number }> {
   const loc = apiLocale(params?.locale)
   const q = new URLSearchParams()
@@ -188,9 +197,13 @@ export async function getPublishedArticleList(params?: {
   if (params?.pageSize) q.set("pageSize", String(params.pageSize))
   if (params?.keyword) q.set("keyword", normalizeSearchKeyword(params.keyword))
   if (params?.categoryId) q.set("categoryId", String(params.categoryId))
+  const fetchInit: FetchInit =
+    params?.revalidateSeconds && params.revalidateSeconds > 0
+      ? { next: { revalidate: params.revalidateSeconds } }
+      : { cache: "no-store" }
   const res = await request<{ list: ArticleItem[]; total: number }>(
     `/article/published/list?${q.toString()}`,
-    { cache: "no-store" }
+    fetchInit
   )
   return { list: res.data?.list ?? [], total: res.data?.total ?? 0 }
 }

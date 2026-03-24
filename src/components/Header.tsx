@@ -119,7 +119,7 @@ export default function Header() {
             type="button"
             onClick={handleAiToggle}
             aria-pressed={aiEnabled}
-            aria-label={t("aiSearchToggleAria")}
+            aria-label={`${t("aiSearch")}，${t("aiSearchToggleAria")}`}
             className={`inline-flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition ${
               aiEnabled
                 ? "border-app-accent bg-app-accent/12 text-app-accent"

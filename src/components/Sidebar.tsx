@@ -47,7 +47,7 @@ export default function Sidebar({ children }: SidebarProps) {
             >
               <Link
                 href={item.path}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                   isActive(item.path)
                     ? "bg-app-card-hover font-medium text-app-text"
                     : "text-app-text-muted hover:bg-app-card-hover hover:text-app-text"

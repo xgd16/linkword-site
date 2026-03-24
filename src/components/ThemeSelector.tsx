@@ -41,7 +41,7 @@ export default function ThemeSelector() {
         type="button"
         onClick={() => setOpen(!open)}
         className="flex items-center gap-2 rounded-lg p-2 text-app-text-muted transition-colors hover:bg-app-card-hover hover:text-app-text"
-        aria-label={t("chooseAria")}
+        aria-label={`${t(themeKey(displayTheme.id))}，${t("chooseAria")}`}
         aria-expanded={open}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
