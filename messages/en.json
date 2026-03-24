@@ -124,7 +124,11 @@
     "closeTocAria": "Close table of contents",
     "close": "Close",
     "zoomAlt": "Enlarged image",
-    "zoomHint": "Press ESC or click the backdrop to close"
+    "zoomHint": "Press ESC or click the backdrop to close",
+    "relatedSitesTitle": "Related sites",
+    "relatedSitesAria": "Navigation sites linked to this article",
+    "relatedNavIntro": "Profile",
+    "relatedNavExternal": "Visit site"
   },
   "ArticleCard": {
     "noSummary": "No summary",

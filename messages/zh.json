@@ -124,7 +124,11 @@
     "closeTocAria": "关闭目录",
     "close": "关闭",
     "zoomAlt": "放大预览",
-    "zoomHint": "按 ESC 或点击背景关闭"
+    "zoomHint": "按 ESC 或点击背景关闭",
+    "relatedSitesTitle": "本文相关网站",
+    "relatedSitesAria": "文章关联的导航网站",
+    "relatedNavIntro": "站内介绍",
+    "relatedNavExternal": "访问官网"
   },
   "ArticleCard": {
     "noSummary": "暂无摘要",

@@ -399,6 +399,63 @@ export default function ArticleDetailClient({ article }: ArticleDetailProps) {
               {content}
             </ReactMarkdown>
           </motion.div>
+
+          {article.relatedNavLinks && article.relatedNavLinks.length > 0 && (
+            <motion.section
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.25 }}
+              className="mt-12 border-t border-app-border pt-10"
+              aria-label={t("relatedSitesAria")}
+            >
+              <h2 className="text-lg font-semibold text-app-text">{t("relatedSitesTitle")}</h2>
+              <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+                {article.relatedNavLinks.map((link) => (
+                  <li
+                    key={link.id}
+                    className="rounded-xl border border-app-border bg-app-card/80 p-4 backdrop-blur-sm"
+                  >
+                    <div className="flex gap-3">
+                      {link.icon ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={resolveImageSrc(link.icon)}
+                          alt=""
+                          className="size-11 shrink-0 rounded-lg border border-app-border bg-app-card-hover object-cover"
+                        />
+                      ) : (
+                        <div className="size-11 shrink-0 rounded-lg border border-dashed border-app-border bg-app-card-hover" />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium text-app-text">{link.title}</p>
+                        {link.slogan ? (
+                          <p className="mt-0.5 line-clamp-2 text-sm text-app-text-muted">{link.slogan}</p>
+                        ) : null}
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <Link
+                            href={`/nav/${link.id}`}
+                            className="inline-flex items-center rounded-lg bg-app-accent-muted px-3 py-1.5 text-sm font-medium text-app-accent transition hover:opacity-90"
+                          >
+                            {t("relatedNavIntro")}
+                          </Link>
+                          {link.url ? (
+                            <a
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center rounded-lg border border-app-border px-3 py-1.5 text-sm text-app-text-muted transition hover:border-app-accent hover:text-app-accent"
+                            >
+                              {t("relatedNavExternal")}
+                            </a>
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </motion.section>
+          )}
         </article>
 
         <motion.aside

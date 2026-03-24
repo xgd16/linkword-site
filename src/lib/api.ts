@@ -195,6 +195,16 @@ export async function getPublishedArticleList(params?: {
   return { list: res.data?.list ?? [], total: res.data?.total ?? 0 }
 }
 
+export interface ArticleRelatedNavLink {
+  id: number
+  title: string
+  url: string
+  icon: string
+  cover: string
+  slogan: string
+  description: string
+}
+
 export interface ArticleDetail {
   id: number
   title: string
@@ -204,6 +214,7 @@ export interface ArticleDetail {
   categoryId: number
   slug: string
   tagNames: string[]
+  relatedNavLinks?: ArticleRelatedNavLink[]
   viewCount?: number
   createTime?: string
   updateTime?: string
