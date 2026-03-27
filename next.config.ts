@@ -27,8 +27,6 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "**.linkwordx.site", pathname: "/**", port: "" },
-      { protocol: "http", hostname: "**.linkwordx.site", pathname: "/**", port: "" },
       { protocol: "https", hostname: "**.linkwordx.xyz", pathname: "/**", port: "" },
       { protocol: "http", hostname: "**.linkwordx.xyz", pathname: "/**", port: "" },
       { protocol: "https", hostname: "www.google.com", pathname: "/**", port: "" },
@@ -36,11 +34,14 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "127.0.0.1", pathname: "/**", port: "" },
     ],
   },
-  // sitemap.xml：构建期仍指向 NEXT_PUBLIC_API_BASE；多域名生产环境建议在网关按 Host 反代各自 API 的 sitemap
-  // /proxy-api 由 src/proxy.ts（Edge）按 Host 动态 rewrite，避免写死单一 api 域名
+  // sitemap.xml 由 Go 后端直读数据库生成
+  // /proxy-api 同源转发到后端，避免浏览器跨域（如 www.* 站点请求 api.* 域名）
   async rewrites() {
     const base = apiBase.replace(/\/$/, "")
-    return [{ source: "/sitemap.xml", destination: `${base}/sitemap.xml` }]
+    return [
+      { source: "/sitemap.xml", destination: `${base}/sitemap.xml` },
+      { source: "/proxy-api/:path*", destination: `${base}/:path*` },
+    ]
   },
 }
 

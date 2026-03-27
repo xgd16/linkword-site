@@ -6,9 +6,6 @@ import NavContent from "./NavContent"
 import NavLoadingFallback from "./NavLoadingFallback"
 import PageMotion from "@/components/PageMotion"
 import { fullLocalizedUrl } from "@/lib/locale-url"
-import { SITE_URL } from "@/lib/site"
-import { siteOriginFromHeaders } from "@/lib/api-url"
-import { headers } from "next/headers"
 
 export async function generateMetadata({
   params,
@@ -19,13 +16,11 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Metadata" })
   const title = t("navTitle")
   const description = t("navDescription")
-  const h = await headers()
-  const siteOrigin = siteOriginFromHeaders(h) ?? SITE_URL
   return {
     title,
     description,
     openGraph: {
-      url: fullLocalizedUrl(locale, "/nav", siteOrigin),
+      url: fullLocalizedUrl(locale, "/nav"),
       title: t("navOgTitle"),
       description,
     },

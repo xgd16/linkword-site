@@ -1,10 +1,8 @@
 import { notFound } from "next/navigation"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getNavLinkDetail } from "@/lib/api"
-import { resolveImageUrl, truncateForMeta, SITE_URL } from "@/lib/site"
+import { resolveImageUrl, truncateForMeta } from "@/lib/site"
 import { fullLocalizedUrl } from "@/lib/locale-url"
-import { siteOriginFromHeaders } from "@/lib/api-url"
-import { headers } from "next/headers"
 import NavLinkDetailClient from "./NavLinkDetail"
 import type { Metadata } from "next"
 
@@ -20,11 +18,9 @@ export async function generateMetadata({
     return { title: t("navDetailFallbackTitle") }
   }
 
-  const h = await headers()
-  const siteOrigin = siteOriginFromHeaders(h) ?? SITE_URL
-  const pageUrl = fullLocalizedUrl(locale, `/nav/${id}`, siteOrigin)
+  const pageUrl = fullLocalizedUrl(locale, `/nav/${id}`)
   const desc = truncateForMeta(item.slogan || item.description)
-  const ogImage = resolveImageUrl(item.cover, { siteOrigin })
+  const ogImage = resolveImageUrl(item.cover)
   const fallbackDesc = t("navDetailDescTemplate", {
     title: item.title,
     category: item.categoryName,
@@ -49,8 +45,8 @@ export async function generateMetadata({
     alternates: {
       canonical: pageUrl,
       languages: {
-        zh: fullLocalizedUrl("zh", `/nav/${id}`, siteOrigin),
-        en: fullLocalizedUrl("en", `/nav/${id}`, siteOrigin),
+        zh: fullLocalizedUrl("zh", `/nav/${id}`),
+        en: fullLocalizedUrl("en", `/nav/${id}`),
       },
     },
     keywords: [item.title, item.categoryName, item.slogan].filter(Boolean),
@@ -77,15 +73,12 @@ export default async function NavLinkDetailPage({
 
   if (!item) notFound()
 
-  const hdrs = await headers()
-  const siteOrigin = siteOriginFromHeaders(hdrs) ?? SITE_URL
-
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: item.title,
     description: item.slogan || item.description?.slice(0, 200),
-    url: fullLocalizedUrl(locale, `/nav/${item.id}`, siteOrigin),
+    url: fullLocalizedUrl(locale, `/nav/${item.id}`),
     mainEntity: {
       "@type": "WebSite",
       name: item.title,
