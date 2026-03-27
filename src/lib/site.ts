@@ -2,8 +2,7 @@
  * 站点配置与 SEO 工具
  */
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
-const BROWSER_API_PREFIX = (process.env.NEXT_PUBLIC_BROWSER_API_PREFIX || "").replace(/\/$/, "")
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://linkwordx.xyz"
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.linkwordx.site"
 export const SITE_NAME = "LinkWord"
 
 /** 工信部 ICP 备案公示文案与查询入口 */
@@ -17,14 +16,10 @@ export function getFullUrl(path: string): string {
   return `${base}${p}`
 }
 
-/** 将相对图片路径转为绝对 URL（用于 OG 等）；生产走同源代理时与页面一致 */
+/** 将相对图片路径转为绝对 URL（用于 OG 等） */
 export function resolveImageUrl(url: string | undefined): string | undefined {
   if (!url?.trim()) return undefined
   if (url.startsWith("http://") || url.startsWith("https://")) return url
-  if (BROWSER_API_PREFIX) {
-    const site = SITE_URL.replace(/\/$/, "")
-    return `${site}${BROWSER_API_PREFIX}${url.startsWith("/") ? "" : "/"}${url}`
-  }
   const base = API_BASE.replace(/\/$/, "")
   return base ? `${base}${url.startsWith("/") ? "" : "/"}${url}` : undefined
 }

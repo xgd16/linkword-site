@@ -2,30 +2,15 @@ import { normalizeSearchKeyword } from "@/lib/searchKeyword"
 
 const DEFAULT_API = "http://localhost:9901"
 
-/**
- * 解析上传/静态相对路径（如 /upload/xxx）为可请求的 URL。
- * 生产环境若配置 NEXT_PUBLIC_BROWSER_API_PREFIX（同源代理），SSR 与客户端一致走该前缀。
- */
+/** 解析上传/静态相对路径（如 /upload/xxx）为可请求的 URL */
 export function resolveUploadAssetUrl(path: string): string {
   if (!path?.trim()) return ""
   if (path.startsWith("http://") || path.startsWith("https://")) return path
-  const prefix = (process.env.NEXT_PUBLIC_BROWSER_API_PREFIX || "").replace(/\/$/, "")
-  const base = prefix
-    ? prefix
-    : (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
+  const base = (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
   return `${base}${path.startsWith("/") ? "" : "/"}${path}`
 }
 
-/** 浏览器：优先同源代理；服务端：API_BASE_SERVER 或 NEXT_PUBLIC_API_BASE */
 function getApiBase(): string {
-  if (typeof window !== "undefined") {
-    const prefix = (process.env.NEXT_PUBLIC_BROWSER_API_PREFIX || "").replace(/\/$/, "")
-    if (prefix) return prefix
-    return (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
-  }
-  if (process.env.API_BASE_SERVER) {
-    return process.env.API_BASE_SERVER.replace(/\/$/, "")
-  }
   return (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
 }
 
