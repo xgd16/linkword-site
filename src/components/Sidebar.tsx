@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl"
 import { Link, usePathname } from "@/i18n/navigation"
 import { motion } from "motion/react"
+import { SITE_ICP_LABEL, SITE_ICP_URL } from "@/lib/site"
 
 interface SidebarProps {
   children?: React.ReactNode
@@ -61,6 +62,16 @@ export default function Sidebar({ children }: SidebarProps) {
         </div>
         {children}
       </nav>
+      <footer className="shrink-0 border-t border-app-border/80 px-3 py-2.5 text-center">
+        <a
+          href={SITE_ICP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block text-[11px] leading-snug text-app-text-muted transition hover:text-app-text"
+        >
+          {SITE_ICP_LABEL}
+        </a>
+      </footer>
     </motion.aside>
   )
 }

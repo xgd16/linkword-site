@@ -5,6 +5,10 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://linkwordx.xyz"
 export const SITE_NAME = "LinkWord"
 
+/** 工信部 ICP 备案公示文案与查询入口 */
+export const SITE_ICP_LABEL = "陕ICP备2025083618号-2"
+export const SITE_ICP_URL = "https://beian.miit.gov.cn/"
+
 /** 生成完整绝对 URL */
 export function getFullUrl(path: string): string {
   const base = SITE_URL.replace(/\/$/, "")
