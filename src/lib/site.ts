@@ -1,8 +1,9 @@
+import { browserProxyPathPrefix } from "@/lib/api-url"
+
 /**
  * 站点配置与 SEO 工具
  */
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
-const BROWSER_API_PREFIX = (process.env.NEXT_PUBLIC_BROWSER_API_PREFIX || "").replace(/\/$/, "")
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://linkwordx.xyz"
 export const SITE_NAME = "LinkWord"
 
@@ -10,20 +11,24 @@ export const SITE_NAME = "LinkWord"
 export const SITE_ICP_LABEL = "陕ICP备2025083618号-2"
 export const SITE_ICP_URL = "https://beian.miit.gov.cn/"
 
-/** 生成完整绝对 URL */
-export function getFullUrl(path: string): string {
-  const base = SITE_URL.replace(/\/$/, "")
+/** 生成完整绝对 URL；siteOrigin 不传则用 NEXT_PUBLIC_SITE_URL（多域名部署时建议在 metadata 里传入当前请求的 origin） */
+export function getFullUrl(path: string, siteOrigin?: string): string {
+  const base = (siteOrigin || SITE_URL).replace(/\/$/, "")
   const p = path.startsWith("/") ? path : `/${path}`
   return `${base}${p}`
 }
 
 /** 将相对图片路径转为绝对 URL（用于 OG 等）；生产走同源代理时与页面一致 */
-export function resolveImageUrl(url: string | undefined): string | undefined {
+export function resolveImageUrl(
+  url: string | undefined,
+  opts?: { siteOrigin?: string }
+): string | undefined {
   if (!url?.trim()) return undefined
   if (url.startsWith("http://") || url.startsWith("https://")) return url
-  if (BROWSER_API_PREFIX) {
-    const site = SITE_URL.replace(/\/$/, "")
-    return `${site}${BROWSER_API_PREFIX}${url.startsWith("/") ? "" : "/"}${url}`
+  const site = (opts?.siteOrigin || SITE_URL).replace(/\/$/, "")
+  const px = browserProxyPathPrefix()
+  if (px) {
+    return `${site}${px}${url.startsWith("/") ? "" : "/"}${url}`
   }
   const base = API_BASE.replace(/\/$/, "")
   return base ? `${base}${url.startsWith("/") ? "" : "/"}${url}` : undefined

@@ -3,7 +3,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getPublishedArticleList } from "@/lib/api"
 import type { ArticleItem } from "@/lib/api"
 import { fullLocalizedUrl } from "@/lib/locale-url"
-import { SITE_NAME } from "@/lib/site"
+import { SITE_NAME, SITE_URL } from "@/lib/site"
+import { siteOriginFromHeaders } from "@/lib/api-url"
+import { headers } from "next/headers"
 import HeroSection from "@/components/HeroSection"
 import FeaturedBanner from "@/components/FeaturedBanner"
 import LatestReleases from "@/components/LatestReleases"
@@ -25,7 +27,9 @@ export async function generateMetadata({
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean)
-  const url = fullLocalizedUrl(locale, "/")
+  const h = await headers()
+  const siteOrigin = siteOriginFromHeaders(h) ?? SITE_URL
+  const url = fullLocalizedUrl(locale, "/", siteOrigin)
 
   return {
     description,
@@ -69,7 +73,9 @@ export default async function HomePage({
   }
 
   const articles = articleRes.list
-  const url = fullLocalizedUrl(locale, "/")
+  const hdrs = await headers()
+  const siteOrigin = siteOriginFromHeaders(hdrs) ?? SITE_URL
+  const url = fullLocalizedUrl(locale, "/", siteOrigin)
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebSite",

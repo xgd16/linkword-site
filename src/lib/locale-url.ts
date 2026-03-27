@@ -10,6 +10,6 @@ export function localizedPath(locale: string, pathname: string): string {
   return `/${locale}${p}`
 }
 
-export function fullLocalizedUrl(locale: string, pathname: string): string {
-  return getFullUrl(localizedPath(locale, pathname))
+export function fullLocalizedUrl(locale: string, pathname: string, siteOrigin?: string): string {
+  return getFullUrl(localizedPath(locale, pathname), siteOrigin)
 }

@@ -1,32 +1,38 @@
 import { normalizeSearchKeyword } from "@/lib/searchKeyword"
-
-const DEFAULT_API = "http://localhost:9901"
+import {
+  browserProxyPathPrefix,
+  deriveApiBaseUrlFromHost,
+  getFallbackApiBaseUrl,
+  shouldUseBrowserProxyApi,
+} from "@/lib/api-url"
 
 /**
  * 解析上传/静态相对路径（如 /upload/xxx）为可请求的 URL。
- * 生产环境若配置 NEXT_PUBLIC_BROWSER_API_PREFIX（同源代理），SSR 与客户端一致走该前缀。
+ * 生产构建走同源 /proxy-api 前缀（与浏览器 API 请求一致）。
  */
 export function resolveUploadAssetUrl(path: string): string {
   if (!path?.trim()) return ""
   if (path.startsWith("http://") || path.startsWith("https://")) return path
-  const prefix = (process.env.NEXT_PUBLIC_BROWSER_API_PREFIX || "").replace(/\/$/, "")
-  const base = prefix
-    ? prefix
-    : (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
+  const prefix = browserProxyPathPrefix().replace(/\/$/, "")
+  const base = prefix || getFallbackApiBaseUrl()
   return `${base}${path.startsWith("/") ? "" : "/"}${path}`
 }
 
-/** 浏览器：优先同源代理；服务端：API_BASE_SERVER 或 NEXT_PUBLIC_API_BASE */
-function getApiBase(): string {
+/** 浏览器：生产环境同源 /proxy-api；服务端：按 Host 推导 api 子域，与各自站点一一对应 */
+async function getApiBase(): Promise<string> {
   if (typeof window !== "undefined") {
-    const prefix = (process.env.NEXT_PUBLIC_BROWSER_API_PREFIX || "").replace(/\/$/, "")
-    if (prefix) return prefix
-    return (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
+    if (shouldUseBrowserProxyApi()) return "/proxy-api"
+    return getFallbackApiBaseUrl()
   }
   if (process.env.API_BASE_SERVER) {
     return process.env.API_BASE_SERVER.replace(/\/$/, "")
   }
-  return (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
+  const { headers } = await import("next/headers")
+  const h = await headers()
+  const host = h.get("x-forwarded-host") || h.get("host") || ""
+  const derived = deriveApiBaseUrlFromHost(host)
+  if (derived) return derived
+  return getFallbackApiBaseUrl()
 }
 
 /** 与后端约定：zh | en */
@@ -72,7 +78,7 @@ interface ApiResponse<T> {
 type FetchInit = RequestInit & { next?: { revalidate?: number } }
 
 async function request<T>(url: string, init?: FetchInit): Promise<ApiResponse<T>> {
-  const base = getApiBase()
+  const base = await getApiBase()
   const path = url.startsWith("/") ? url : `/${url}`
   const usesNextRevalidate =
     typeof init?.next?.revalidate === "number" && init.next.revalidate > 0
@@ -149,7 +155,7 @@ export async function reportSiteVisit(params: {
   locale: string
 }): Promise<void> {
   try {
-    await fetch(`${getApiBase()}/site/visit`, {
+    await fetch(`${await getApiBase()}/site/visit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -167,7 +173,7 @@ export async function reportSiteVisit(params: {
 /** 上报链接点击 */
 export async function reportNavLinkClick(linkId: number): Promise<void> {
   try {
-    await fetch(`${getApiBase()}/nav/link/click`, {
+    await fetch(`${await getApiBase()}/nav/link/click`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ linkId }),
@@ -264,7 +270,7 @@ export interface ArticleDetail {
 /** 上报文章阅读 */
 export async function reportArticleView(articleId: number): Promise<void> {
   try {
-    await fetch(`${getApiBase()}/article/view`, {
+    await fetch(`${await getApiBase()}/article/view`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ articleId }),

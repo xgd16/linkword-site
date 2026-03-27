@@ -16,6 +16,8 @@ import { SettingsProvider } from "@/components/SettingsProvider"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 import { routing } from "@/i18n/routing"
 import { fullLocalizedUrl } from "@/lib/locale-url"
+import { siteOriginFromHeaders } from "@/lib/api-url"
+import { headers } from "next/headers"
 import SiteVisitReporter from "@/components/SiteVisitReporter"
 import { fontMono, fontSans } from "../fonts"
 
@@ -40,13 +42,15 @@ export async function generateMetadata({
     .map((s) => s.trim())
     .filter(Boolean)
 
-  const canonical = fullLocalizedUrl(locale, "/")
+  const h = await headers()
+  const siteOrigin = siteOriginFromHeaders(h) ?? SITE_URL
+  const canonical = fullLocalizedUrl(locale, "/", siteOrigin)
   const ogLocale = locale === "zh" ? "zh_CN" : "en_US"
-  const altEn = fullLocalizedUrl("en", "/")
-  const altZh = fullLocalizedUrl("zh", "/")
+  const altEn = fullLocalizedUrl("en", "/", siteOrigin)
+  const altZh = fullLocalizedUrl("zh", "/", siteOrigin)
 
   return {
-    metadataBase: new URL(SITE_URL),
+    metadataBase: new URL(siteOrigin),
     title: { default: title, template: `%s - ${SITE_NAME}` },
     description,
     keywords,

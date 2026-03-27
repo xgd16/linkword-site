@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getPublishedArticleDetail } from "@/lib/api"
-import { resolveImageUrl, truncateForMeta } from "@/lib/site"
+import { resolveImageUrl, truncateForMeta, SITE_URL } from "@/lib/site"
 import { fullLocalizedUrl } from "@/lib/locale-url"
+import { siteOriginFromHeaders } from "@/lib/api-url"
+import { headers } from "next/headers"
 import ArticleDetailClient from "./ArticleDetail"
 import type { Metadata } from "next"
 
@@ -18,9 +20,11 @@ export async function generateMetadata({
     return { title: t("articleFallbackTitle") }
   }
 
-  const pageUrl = fullLocalizedUrl(locale, `/articles/${id}`)
+  const h = await headers()
+  const siteOrigin = siteOriginFromHeaders(h) ?? SITE_URL
+  const pageUrl = fullLocalizedUrl(locale, `/articles/${id}`, siteOrigin)
   const desc = truncateForMeta(article.summary)
-  const ogImage = resolveImageUrl(article.cover)
+  const ogImage = resolveImageUrl(article.cover, { siteOrigin })
   const ogLocale = locale === "zh" ? "zh_CN" : "en_US"
 
   return {
@@ -46,8 +50,8 @@ export async function generateMetadata({
     alternates: {
       canonical: pageUrl,
       languages: {
-        zh: fullLocalizedUrl("zh", `/articles/${id}`),
-        en: fullLocalizedUrl("en", `/articles/${id}`),
+        zh: fullLocalizedUrl("zh", `/articles/${id}`, siteOrigin),
+        en: fullLocalizedUrl("en", `/articles/${id}`, siteOrigin),
       },
     },
     keywords: [article.title, ...(article.tagNames || [])].filter(Boolean),
@@ -74,8 +78,10 @@ export default async function ArticleDetailPage({
 
   if (!article) notFound()
 
-  const pageUrl = fullLocalizedUrl(locale, `/articles/${article.id}`)
-  const ogImage = resolveImageUrl(article.cover)
+  const hdrs = await headers()
+  const siteOrigin = siteOriginFromHeaders(hdrs) ?? SITE_URL
+  const pageUrl = fullLocalizedUrl(locale, `/articles/${article.id}`, siteOrigin)
+  const ogImage = resolveImageUrl(article.cover, { siteOrigin })
 
   const jsonLd = {
     "@context": "https://schema.org",
