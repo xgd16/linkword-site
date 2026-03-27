@@ -35,8 +35,13 @@ const nextConfig: NextConfig = {
     ],
   },
   // sitemap.xml 由 Go 后端直读数据库生成
+  // /proxy-api 同源转发到后端，避免浏览器跨域（如 www.* 站点请求 api.* 域名）
   async rewrites() {
-    return [{ source: "/sitemap.xml", destination: `${apiBase.replace(/\/$/, "")}/sitemap.xml` }]
+    const base = apiBase.replace(/\/$/, "")
+    return [
+      { source: "/sitemap.xml", destination: `${base}/sitemap.xml` },
+      { source: "/proxy-api/:path*", destination: `${base}/:path*` },
+    ]
   },
 }
 

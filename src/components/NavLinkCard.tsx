@@ -7,12 +7,10 @@ import { Link } from "@/i18n/navigation"
 import ReactMarkdown from "react-markdown"
 import { motion } from "motion/react"
 import type { NavTreeLink } from "@/lib/api"
-import { reportNavLinkClick } from "@/lib/api"
+import { reportNavLinkClick, resolveUploadAssetUrl } from "@/lib/api"
 import { useNavClickMode } from "./SettingsProvider"
 import { spring, staggerItem } from "@/lib/motion"
 import HighlightPlain from "./HighlightPlain"
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
 
 function getDomain(url: string): string {
   try {
@@ -27,7 +25,7 @@ function getDomain(url: string): string {
 function getIconSrc(icon: string, domain: string): { primary: string; fallback: string } {
   const fallback = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=64` : ""
   if (icon?.startsWith("/upload/")) {
-    return { primary: `${API_BASE.replace(/\/$/, "")}${icon}`, fallback }
+    return { primary: resolveUploadAssetUrl(icon), fallback }
   }
   if (icon?.startsWith("http")) {
     return { primary: icon, fallback }
@@ -67,7 +65,7 @@ export default function NavLinkCard({ link, categoryName, highlightTokens = [] }
         <div className="absolute inset-0 bg-white/5" />
           {link.cover ? (
           <Image
-            src={link.cover.startsWith("http") ? link.cover : `${API_BASE.replace(/\/$/, "")}${link.cover}`}
+            src={link.cover.startsWith("http") ? link.cover : resolveUploadAssetUrl(link.cover)}
             alt=""
             fill
             unoptimized

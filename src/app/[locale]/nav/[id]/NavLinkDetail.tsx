@@ -7,9 +7,7 @@ import ReactMarkdown from "react-markdown"
 import { motion } from "motion/react"
 import PageMotion from "@/components/PageMotion"
 import type { NavLinkWithCategory } from "@/lib/api"
-import { reportNavLinkClick } from "@/lib/api"
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
+import { reportNavLinkClick, resolveUploadAssetUrl } from "@/lib/api"
 
 function getDomain(url: string): string {
   try {
@@ -23,7 +21,7 @@ function getDomain(url: string): string {
 function getCoverUrl(cover: string): string {
   if (!cover) return ""
   if (cover.startsWith("http")) return cover
-  return `${API_BASE.replace(/\/$/, "")}${cover.startsWith("/") ? "" : "/"}${cover}`
+  return resolveUploadAssetUrl(cover)
 }
 
 interface NavLinkDetailProps {

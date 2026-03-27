@@ -8,20 +8,18 @@ import remarkGfm from "remark-gfm"
 import { motion, AnimatePresence } from "motion/react"
 import { createElement, isValidElement, useCallback, useEffect, useMemo, useState } from "react"
 import type { HTMLAttributes, ReactNode } from "react"
-import { reportArticleView, type ArticleDetail } from "@/lib/api"
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
+import { reportArticleView, resolveUploadAssetUrl, type ArticleDetail } from "@/lib/api"
 
 function getCoverUrl(cover: string): string {
   if (!cover) return ""
   if (cover.startsWith("http")) return cover
-  return `${API_BASE.replace(/\/$/, "")}${cover.startsWith("/") ? "" : "/"}${cover}`
+  return resolveUploadAssetUrl(cover)
 }
 
 function resolveImageSrc(src: string | undefined): string {
   if (!src) return ""
   if (src.startsWith("http")) return src
-  return `${API_BASE.replace(/\/$/, "")}${src.startsWith("/") ? "" : "/"}${src}`
+  return resolveUploadAssetUrl(src)
 }
 
 interface ArticleDetailProps {

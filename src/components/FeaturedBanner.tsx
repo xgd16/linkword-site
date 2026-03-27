@@ -5,16 +5,15 @@ import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/navigation"
 import { motion } from "motion/react"
 import type { ArticleItem } from "@/lib/api"
+import { resolveUploadAssetUrl } from "@/lib/api"
 import { staggerContainer, staggerItem } from "@/lib/motion"
 import BannerCarousel from "./BannerCarousel"
 import ClickRanking from "./ClickRanking"
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
-
 function resolveCover(cover: string | undefined): string | null {
   if (!cover?.trim()) return null
   if (cover.startsWith("http")) return cover
-  return `${API_BASE.replace(/\/$/, "")}${cover.startsWith("/") ? "" : "/"}${cover}`
+  return resolveUploadAssetUrl(cover)
 }
 
 interface FeaturedBannerProps {

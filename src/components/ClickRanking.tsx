@@ -6,14 +6,12 @@ import { useLocale, useTranslations } from "next-intl"
 import { motion } from "motion/react"
 import { Link } from "@/i18n/navigation"
 import type { NavLinkClickRankItem } from "@/lib/api"
-import { getNavLinkClickRank, reportNavLinkClick } from "@/lib/api"
+import { getNavLinkClickRank, reportNavLinkClick, resolveUploadAssetUrl } from "@/lib/api"
 import { staggerContainer, staggerItem } from "@/lib/motion"
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
 
 function getIconSrc(icon: string, url: string): string {
   if (icon?.startsWith("/upload/"))
-    return `${API_BASE.replace(/\/$/, "")}${icon}`
+    return resolveUploadAssetUrl(icon)
   if (icon?.startsWith("http")) return icon
   try {
     const host = new URL(url).hostname.replace(/^www\./, "")

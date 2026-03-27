@@ -5,5 +5,6 @@ import { routing } from "./i18n/routing"
 export const proxy = createMiddleware(routing)
 
 export const config = {
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  // proxy-api 为 Next rewrites 同源转发后端，勿经 locale 中间件
+  matcher: ["/((?!api|proxy-api|_next|_vercel|.*\\..*).*)"],
 }

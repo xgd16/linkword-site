@@ -4,14 +4,13 @@ import { useLocale, useTranslations } from "next-intl"
 import { Link } from "@/i18n/navigation"
 import { motion } from "motion/react"
 import type { ArticleItem } from "@/lib/api"
+import { resolveUploadAssetUrl } from "@/lib/api"
 import { spring } from "@/lib/motion"
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
 
 function getCoverUrl(cover: string): string {
   if (!cover) return ""
   if (cover.startsWith("http")) return cover
-  return `${API_BASE.replace(/\/$/, "")}${cover.startsWith("/") ? "" : "/"}${cover}`
+  return resolveUploadAssetUrl(cover)
 }
 
 interface ArticleCardProps {

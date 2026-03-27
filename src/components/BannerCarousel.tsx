@@ -5,14 +5,10 @@ import Image from "next/image"
 import { useTranslations } from "next-intl"
 import { motion, AnimatePresence } from "motion/react"
 import type { BannerItem } from "@/lib/api"
-import { getBannerList } from "@/lib/api"
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:9901"
+import { getBannerList, resolveUploadAssetUrl } from "@/lib/api"
 
 function resolveImage(img: string): string {
-  if (!img?.trim()) return ""
-  if (img.startsWith("http")) return img
-  return `${API_BASE.replace(/\/$/, "")}${img.startsWith("/") ? "" : "/"}${img}`
+  return resolveUploadAssetUrl(img)
 }
 
 export default function BannerCarousel() {

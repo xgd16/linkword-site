@@ -2,9 +2,28 @@ import { normalizeSearchKeyword } from "@/lib/searchKeyword"
 
 const DEFAULT_API = "http://localhost:9901"
 
-/** 客户端请求使用公开 API 地址；服务端渲染（SSR）使用 API_BASE_SERVER（若配置） */
+/**
+ * 解析上传/静态相对路径（如 /upload/xxx）为可请求的 URL。
+ * 生产环境若配置 NEXT_PUBLIC_BROWSER_API_PREFIX（同源代理），SSR 与客户端一致走该前缀。
+ */
+export function resolveUploadAssetUrl(path: string): string {
+  if (!path?.trim()) return ""
+  if (path.startsWith("http://") || path.startsWith("https://")) return path
+  const prefix = (process.env.NEXT_PUBLIC_BROWSER_API_PREFIX || "").replace(/\/$/, "")
+  const base = prefix
+    ? prefix
+    : (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
+  return `${base}${path.startsWith("/") ? "" : "/"}${path}`
+}
+
+/** 浏览器：优先同源代理；服务端：API_BASE_SERVER 或 NEXT_PUBLIC_API_BASE */
 function getApiBase(): string {
-  if (typeof window === "undefined" && process.env.API_BASE_SERVER) {
+  if (typeof window !== "undefined") {
+    const prefix = (process.env.NEXT_PUBLIC_BROWSER_API_PREFIX || "").replace(/\/$/, "")
+    if (prefix) return prefix
+    return (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
+  }
+  if (process.env.API_BASE_SERVER) {
     return process.env.API_BASE_SERVER.replace(/\/$/, "")
   }
   return (process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")
@@ -130,7 +149,7 @@ export async function reportSiteVisit(params: {
   locale: string
 }): Promise<void> {
   try {
-    await fetch(`${(process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")}/site/visit`, {
+    await fetch(`${getApiBase()}/site/visit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -148,7 +167,7 @@ export async function reportSiteVisit(params: {
 /** 上报链接点击 */
 export async function reportNavLinkClick(linkId: number): Promise<void> {
   try {
-    await fetch(`${(process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")}/nav/link/click`, {
+    await fetch(`${getApiBase()}/nav/link/click`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ linkId }),
@@ -245,7 +264,7 @@ export interface ArticleDetail {
 /** 上报文章阅读 */
 export async function reportArticleView(articleId: number): Promise<void> {
   try {
-    await fetch(`${(process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API).replace(/\/$/, "")}/article/view`, {
+    await fetch(`${getApiBase()}/article/view`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ articleId }),
