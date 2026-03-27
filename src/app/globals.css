@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* 字体变量由 next/font（[locale]/layout + fonts.ts）注入到 body，构建时打包 woff2，无需访问 Google CDN */
+/* 字体变量由 next/font/local（fonts.ts，@fontsource 包内 woff2）注入；构建不请求 fonts.gstatic.com */
 
 /* 主题变量 - 浅色：清新绿意 */
 :root,
